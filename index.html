@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VCK IT Wing - Volunteer Registration</title>
+
+<style>
+    :root {
+        --blue: #0754b8;
+        --blue-dark: #06356f;
+        --blue-deep: #032c60;
+        --blue-light: #eaf4ff;
+        --red: #d91f2d;
+        --white: #ffffff;
+        --black: #111111;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --border: #d9e1ea;
+        --success: #15803d;
+        --error: #dc2626;
+        --shadow: 0 8px 30px rgba(3,44,96,.10);
+        --radius: 16px;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f5f8fc;
+        color: var(--text);
+        line-height: 1.5;
+    }
+
+    .page {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .header {
+        background: linear-gradient(135deg, var(--blue-deep), var(--blue));
+        color: var(--white);
+        padding: 18px 16px 28px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header::after {
+        content: "";
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.06);
+        right: -80px;
+        bottom: -90px;
+    }
+
+    .header-top {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        min-height: 48px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .wing-logo {
+        width: 58px;
+        height: 58px;
+        object-fit: contain;
+        border-radius: 10px;
+        background: var(--white);
+        padding: 4px;
+    }
+
+    .header-content {
+        text-align: center;
+        max-width: 600px;
+        margin: 12px auto 0;
+        position: relative;
+        z-index: 2;
+    }
+
+    .leader-image {
+        width: 105px;
+        height: 105px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid rgba(255,255,255,.95);
+        margin-bottom: 12px;
+        box-shadow: 0 8px 25px rgba(0,0,0,.20);
+    }
+
+    .organization {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        opacity: .9;
+    }
+
+    .title {
+        font-size: 28px;
+        font-weight: 900;
+        margin-top: 4px;
+        letter-spacing: -.5px;
+    }
+
+    .tagline {
+        margin-top: 5px;
+        font-size: 14px;
+        opacity: .9;
+    }
+
+    .slogan {
+        margin-top: 16px;
+        font-size: 19px;
+        font-weight: 800;
+    }
+
+    .brand-line {
+        width: 52px;
+        height: 4px;
+        background: var(--red);
+        border-radius: 10px;
+        margin: 14px auto 0;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    main {
+        width: 100%;
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 24px 14px 40px;
+        flex: 1;
+    }
+
+    .intro {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .intro h1 {
+        font-size: 24px;
+        color: var(--blue-deep);
+        margin-bottom: 5px;
+    }
+
+    .intro p {
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .form-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 18px;
+    }
+
+    .section {
+        padding-bottom: 22px;
+        margin-bottom: 22px;
+        border-bottom: 1px solid #edf0f4;
+    }
+
+    .section:last-of-type {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 5px;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        color: var(--blue-deep);
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .section-number {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--blue);
+        color: var(--white);
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .field {
+        margin-bottom: 15px;
+    }
+
+    .field:last-child {
+        margin-bottom: 0;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .required {
+        color: var(--red);
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: var(--white);
+        color: var(--text);
+        font-size: 15px;
+        padding: 13px 12px;
+        outline: none;
+        transition: border-color .2s, box-shadow .2s;
+        font-family: inherit;
+    }
+
+    input,
+    select {
+        min-height: 48px;
+    }
+
+    textarea {
+        min-height: 105px;
+        resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(7,84,184,.10);
+    }
+
+    .two-column {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    /* =========================
+       SKILLS
+    ========================= */
+
+    .skills-help {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+    .skills-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .skill-button {
+        min-height: 44px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--white);
+        color: var(--text);
+        padding: 9px 8px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all .15s ease;
+    }
+
+    .skill-button:hover {
+        border-color: var(--blue);
+    }
+
+    .skill-button.selected {
+        background: var(--blue-light);
+        color: var(--blue-dark);
+        border-color: var(--blue);
+        box-shadow: inset 0 0 0 1px var(--blue);
+    }
+
+    /* =========================
+       SUBMIT
+    ========================= */
+
+    .submit-button {
+        width: 100%;
+        min-height: 52px;
+        border: none;
+        border-radius: 12px;
+        background: var(--blue);
+        color: var(--white);
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        margin-top: 8px;
+        transition:
+            transform .15s,
+            opacity .2s,
+            background .2s;
+    }
+
+    .submit-button:hover {
+        background: var(--blue-dark);
+    }
+
+    .submit-button:active {
+        transform: scale(.98);
+    }
+
+    .submit-button:disabled {
+        opacity: .65;
+        cursor: not-allowed;
+    }
+
+    .form-message {
+        display: none;
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .form-message.success {
+        display: block;
+        color: var(--success);
+        background: #ecfdf3;
+        border: 1px solid #bbf7d0;
+    }
+
+    .form-message.error {
+        display: block;
+        color: var(--error);
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+    }
+
+    .success-state {
+        display: none;
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 32px 20px;
+        text-align: center;
+        animation: fadeInUp .45s ease;
+    }
+
+    .success-state.visible {
+        display: block;
+    }
+
+    .success-icon-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+    }
+
+    .success-icon {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        background: linear-gradient(180deg, #1bbf60, #0f9c4f);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 18px 40px rgba(21, 128, 61, 0.22);
+        animation: pulseCheck 0.9s ease-out;
+    }
+
+    .success-icon svg {
+        width: 58px;
+        height: 58px;
+        stroke: var(--white);
+        stroke-width: 6;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 100;
+        stroke-dashoffset: 100;
+        animation: drawTick 0.8s ease forwards 0.2s;
+    }
+
+    .success-title {
+        color: var(--success);
+        font-size: 28px;
+        font-weight: 900;
+        margin-bottom: 8px;
+    }
+
+    .success-text {
+        color: var(--text);
+        font-size: 15px;
+        margin-bottom: 20px;
+    }
+
+    .another-submit-button {
+        min-height: 52px;
+        width: 100%;
+        border: none;
+        border-radius: 12px;
+        background: var(--success);
+        color: var(--white);
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: transform .15s ease, background .2s ease, opacity .2s ease;
+    }
+
+    .another-submit-button:hover {
+        background: #116f3b;
+    }
+
+    .another-submit-button:active {
+        transform: scale(.98);
+    }
+
+    @keyframes drawTick {
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    @keyframes pulseCheck {
+        0% {
+            transform: scale(0.7);
+            opacity: 0;
+        }
+        60% {
+            transform: scale(1.08);
+            opacity: 1;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+        background: var(--blue-deep);
+        color: var(--white);
+        padding: 22px 16px;
+    }
+
+    .footer-inner {
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        text-align: center;
+    }
+
+    .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .footer-logo {
+        width: 52px;
+        height: 52px;
+        object-fit: contain;
+        background: var(--white);
+        padding: 4px;
+        border-radius: 9px;
+    }
+
+    .footer-title {
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .footer-subtitle {
+        font-size: 12px;
+        opacity: .8;
+        margin-top: 2px;
+    }
+
+    .typing-wrapper {
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .typing-text {
+        display: inline-block;
+        min-height: 28px;
+        font-size: 17px;
+        font-weight: 800;
+        padding-right: 4px;
+        border-right: 2px solid var(--red);
+        white-space: nowrap;
+    }
+
+    /* =========================
+       DESKTOP / TABLET
+    ========================= */
+
+    @media (min-width: 600px) {
+
+        .header {
+            padding-left: 28px;
+            padding-right: 28px;
+        }
+
+        .header-content {
+            margin-top: 5px;
+        }
+
+        .title {
+            font-size: 34px;
+        }
+
+        main {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .form-card {
+            padding: 28px;
+        }
+
+        .two-column {
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .two-column .field {
+            margin-bottom: 15px;
+        }
+
+        .skills-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .footer-inner {
+            flex-direction: row;
+            justify-content: space-between;
+            text-align: left;
+        }
+
+        .typing-wrapper {
+            justify-content: flex-end;
+        }
+    }
+</style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+```
+<!-- =========================
+     HEADER
+========================= -->
+
+<header class="header">
+
+    <div class="header-top">
+        <img
+            src="images/vck-it-wing-logo.jpeg"
+            alt="VCK IT Wing Logo"
+            class="wing-logo"
+        >
+    </div>
+
+    <div class="header-content">
+
+        <img
+            src="images/thol-thirumavalavan.jpg"
+            alt="Thol. Thirumavalavan"
+            class="leader-image"
+        >
+
+        <div class="organization">
+            VCK IT Wing
+        </div>
+
+        <div class="title">
+            VCK IT Wing Meetup Application
+        </div>
+
+        <div class="tagline">
+            Technology for Social Justice
+        </div>
+
+        <div class="slogan">
+            அமைப்பாய்த் திரள்வோம் !
+        </div>
+
+        <div class="brand-line"></div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main>
+
+    <div class="intro">
+        <h1>VCK IT Wing Meetup Application</h1>
+        <p>
+            Apply to join the upcoming meetup and contribute your skills.
+        </p>
+    </div>
+
+
+    <form id="volunteerForm" class="form-card">
+
+        <!-- SECTION 1 -->
+
+        <section class="section">
+
+            <div class="section-title">
+                <span class="section-number">1</span>
+                Personal Information
+            </div>
+
+
+            <div class="field">
+
+                <label for="fullName">
+                    Full Name <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    placeholder="Enter your full name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="two-column">
+
+                <div class="field">
+
+                    <label for="mobile">
+                        Mobile Number <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="mobile"
+                        name="mobile"
+                        placeholder="10-digit mobile number"
+                        inputmode="numeric"
+                        pattern="[0-9]{10}"
+                        maxlength="10"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="whatsapp">
+                        WhatsApp Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="whatsapp"
+                        name="whatsapp"
+                        placeholder="WhatsApp number"
+                        inputmode="numeric"
+                        pattern="[0-9]{10}"
+                        maxlength="10"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email address"
+                >
+
+            </div>
+
+
+            <div class="two-column">
+
+                <div class="field">
+
+                    <label for="age">
+                        Age <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="number"
+                        id="age"
+                        name="age"
+                        placeholder="Your age"
+                        min="18"
+                        max="100"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="gender">
+                        Gender <span class="required">*</span>
+                    </label>
+
+                    <select
+                        id="gender"
+                        name="gender"
+                        required
+                    >
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SECTION 2 -->
+
+        <section class="section">
+
+            <div class="section-title">
+                <span class="section-number">2</span>
+                Location Details
+            </div>
+
+
+            <div class="field">
+
+                <label for="district">
+                    District <span class="required">*</span>
+                </label>
+
+                <select
+                    id="district"
+                    name="district"
+                    required
+                >
+                    <option value="">Select District</option>
+
+                    <option value="Ariyalur">Ariyalur</option>
+                    <option value="Chengalpattu">Chengalpattu</option>
+                    <option value="Chennai">Chennai</option>
+                    <option value="Coimbatore">Coimbatore</option>
+                    <option value="Cuddalore">Cuddalore</option>
+                    <option value="Dharmapuri">Dharmapuri</option>
+                    <option value="Dindigul">Dindigul</option>
+                    <option value="Erode">Erode</option>
+                    <option value="Kallakurichi">Kallakurichi</option>
+                    <option value="Kanchipuram">Kanchipuram</option>
+                    <option value="Kanniyakumari">Kanniyakumari</option>
+                    <option value="Karur">Karur</option>
+                    <option value="Krishnagiri">Krishnagiri</option>
+                    <option value="Madurai">Madurai</option>
+                    <option value="Mayiladuthurai">Mayiladuthurai</option>
+                    <option value="Nagapattinam">Nagapattinam</option>
+                    <option value="Namakkal">Namakkal</option>
+                    <option value="Nilgiris">Nilgiris</option>
+                    <option value="Perambalur">Perambalur</option>
+                    <option value="Pudukkottai">Pudukkottai</option>
+                    <option value="Ramanathapuram">Ramanathapuram</option>
+                    <option value="Ranipet">Ranipet</option>
+                    <option value="Salem">Salem</option>
+                    <option value="Sivaganga">Sivaganga</option>
+                    <option value="Tenkasi">Tenkasi</option>
+                    <option value="Thanjavur">Thanjavur</option>
+                    <option value="Theni">Theni</option>
+                    <option value="Thiruvallur">Thiruvallur</option>
+                    <option value="Thiruvarur">Thiruvarur</option>
+                    <option value="Thoothukudi">Thoothukudi</option>
+                    <option value="Tiruchirappalli">Tiruchirappalli</option>
+                    <option value="Tirunelveli">Tirunelveli</option>
+                    <option value="Tirupattur">Tirupattur</option>
+                    <option value="Tiruppur">Tiruppur</option>
+                    <option value="Tiruvannamalai">Tiruvannamalai</option>
+                    <option value="Vellore">Vellore</option>
+                    <option value="Viluppuram">Viluppuram</option>
+                    <option value="Virudhunagar">Virudhunagar</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="constituency">
+                    Assembly Constituency
+                </label>
+
+                <input
+                    type="text"
+                    id="constituency"
+                    name="constituency"
+                    placeholder="Enter your constituency"
+                >
+
+            </div>
+
+
+            <div class="two-column">
+
+                <div class="field">
+
+                    <label for="townCity">
+                        Town / City
+                    </label>
+
+                    <input
+                        type="text"
+                        id="townCity"
+                        name="townCity"
+                        placeholder="Town / City"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="areaWard">
+                        Zip Code
+                    </label>
+
+                    <input
+                        type="text"
+                        id="areaWard"
+                        name="areaWard"
+                        placeholder="Zip Code"
+                    >
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SECTION 3 -->
+
+        <section class="section">
+
+            <div class="section-title">
+                <span class="section-number">3</span>
+                Social Media
+            </div>
+
+
+            <div class="field">
+
+                <label for="instagram">
+                    Instagram
+                </label>
+
+                <input
+                    type="text"
+                    id="instagram"
+                    name="instagram"
+                    placeholder="@username"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="facebook">
+                    Facebook
+                </label>
+
+                <input
+                    type="text"
+                    id="facebook"
+                    name="facebook"
+                    placeholder="Facebook profile / username"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="twitter">
+                    X / Twitter
+                </label>
+
+                <input
+                    type="text"
+                    id="twitter"
+                    name="twitter"
+                    placeholder="@username"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="youtube">
+                    YouTube
+                </label>
+
+                <input
+                    type="text"
+                    id="youtube"
+                    name="youtube"
+                    placeholder="Channel name / link"
+                >
+
+            </div>
+
+        </section>
+
+
+        <!-- SECTION 4 -->
+
+        <section class="section">
+
+            <div class="section-title">
+                <span class="section-number">4</span>
+                Skills & Experience
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Skills <span class="required">*</span>
+                </label>
+
+                <div class="skills-help">
+                    Select all skills that apply.
+                </div>
+
+
+                <div class="skills-grid">
+
+                    <button
+                        type="button"
+                        class="skill-button"
+                        data-skill="Graphic Design"
+                    >
+                        Graphic Design
+                    </button>
+
+                    <button
+                        type="button"
+                        class="skill-button"
+                        data-skill="Video Editing"
+                    >
+                        Video Editing
+                    </button>
+
+                    <button
+                        type="button"
+                        class="skill-button"
+                        data-skill="Reels / Shorts"
+                    >
+                        Reels / Shorts
+                    </button>
+
+                    <button
+                        type="button"
+                        class="skill-button"
+                        data-skill="Photography"
+                    >
+                        Photography
+                    </button>
+
+                    <button
+                        type="button"
+                        class="skill-button"
+                        data-skill="Videography"
+                    >
+                        Videography
+                    </button>
+
+                    <button
+                        type="button"
+                        class="skill-button"
+                        data-skill="Social Media Management"
+                    >
+                        Social Media
+                    </button>
+
+                    <button
+                        type="button"
+                        class="skill-button"
+                        data-skill="Content Writing"
+                    >
+                        Content Writing
+                    </button>
+
+                    <button
+                        type="button"
+                        class="skill-button"
+                        data-skill="Copywriting"
+                    >
+                        Copywriting
+                    </button>
+
+                    <button
+                        type="button"
+                        class="skill-button"
+                        data-skill="Web Development"
+                    >
+                        Web Development
+                    </button>
+
+                    <button
+                        type="button"
+                        class="skill-button"
+                        data-skill="Software Development"
+                    >
+                        Software Development
+                    </button>
+
+                    <button
+                        type="button"
+                        class="skill-button"
+                        data-skill="UI/UX Design"
+                    >
+                        UI/UX Design
+                    </button>
+
+                    <button
+                        type="button"
+                        class="skill-button"
+                        data-skill="AI / Automation"
+                    >
+                        AI / Automation
+                    </button>
+
+                    <button
+                        type="button"
+                        class="skill-button"
+                        data-skill="Other"
+                    >
+                        Other
+                    </button>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- SECTION 5 -->
+
+        <section class="section">
+
+            <div class="section-title">
+                <span class="section-number">5</span>
+                Volunteer Preference
+            </div>
+
+
+            <div class="field">
+
+                <label for="preferredActivity">
+                    Preferred Activity <span class="required">*</span>
+                </label>
+
+                <select
+                    id="preferredActivity"
+                    name="preferredActivity"
+                    required
+                >
+                    <option value="">
+                        Select Preferred Activity
+                    </option>
+
+                    <option value="Content Creation">
+                        Content Creation
+                    </option>
+
+                    <option value="Social Media">
+                        Social Media
+                    </option>
+
+                    <option value="Design">
+                        Design
+                    </option>
+
+                    <option value="Video / Reels">
+                        Video / Reels
+                    </option>
+
+                    <option value="Technology">
+                        Technology
+                    </option>
+
+                    <option value="Photography">
+                        Photography
+                    </option>
+
+                    <option value="Campaign Support">
+                        Campaign Support
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="additionalInfo">
+                    Additional Information
+                </label>
+
+                <textarea
+                    id="additionalInfo"
+                    name="additionalInfo"
+                    placeholder="Anything else you would like to share..."
+                ></textarea>
+
+            </div>
+
+        </section>
+
+
+        <!-- SUBMIT -->
+
+        <button
+            type="submit"
+            id="submitButton"
+            class="submit-button"
+        >
+            Submit Registration
+        </button>
+
+
+        <div
+            id="formMessage"
+            class="form-message"
+        ></div>
+
+    </form>
+
+    <div id="successState" class="success-state" aria-live="polite">
+        <div class="success-icon-wrap">
+            <div class="success-icon" aria-hidden="true">
+                <svg viewBox="0 0 52 52" role="img" aria-label="Success">
+                    <path d="M14 27 L23 36 L38 16"></path>
+                </svg>
+            </div>
+        </div>
+
+        <div class="success-title">Submitted</div>
+
+        <div class="success-text">
+            Your meetup application has been received successfully.
+        </div>
+
+        <button
+            type="button"
+            id="anotherSubmissionBtn"
+            class="another-submit-button"
+        >
+            Another Submission
+        </button>
+    </div>
+
+</main>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <div class="footer-inner">
+
+        <div class="footer-brand">
+
+            <img
+                src="images/vck-it-wing-logo.jpeg"
+                alt="VCK IT Wing Logo"
+                class="footer-logo"
+            >
+
+            <div>
+                <div class="footer-title">
+                    VCK IT Wing
+                </div>
+
+                <div class="footer-subtitle">
+                    Technology for Social Justice
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="typing-wrapper">
+
+            <div
+                id="typingText"
+                class="typing-text"
+            ></div>
+
+        </div>
+
+    </div>
+
+</footer>
+```
+
+</div>
+
+<script>
+
+    /* ==========================================
+       GOOGLE APPS SCRIPT
+    ========================================== */
+
+    const SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbyHrKinGH8RkCJZDSN8KPAIuq0knnp5Z2dQ55N3WvmYZrSUL-2yoKaYqYfEs9gUlHHB/exec";
+
+
+    /* ==========================================
+       SKILL SELECTION
+    ========================================== */
+
+    const selectedSkills = new Set();
+
+    const skillButtons =
+        document.querySelectorAll(".skill-button");
+
+
+    skillButtons.forEach(function(button) {
+
+        button.addEventListener("click", function() {
+
+            const skill =
+                button.dataset.skill;
+
+
+            if (selectedSkills.has(skill)) {
+
+                selectedSkills.delete(skill);
+
+                button.classList.remove("selected");
+
+            } else {
+
+                selectedSkills.add(skill);
+
+                button.classList.add("selected");
+
+            }
+
+        });
+
+    });
+
+
+    /* ==========================================
+       MOBILE NUMBER VALIDATION
+    ========================================== */
+
+    const mobileInputs =
+        document.querySelectorAll(
+            "#mobile, #whatsapp"
+        );
+
+
+    mobileInputs.forEach(function(input) {
+
+        input.addEventListener("input", function() {
+
+            input.value =
+                input.value.replace(/\D/g, "").slice(0, 10);
+
+        });
+
+    });
+
+
+    /* ==========================================
+       FORM SUBMISSION
+    ========================================== */
+
+    const form =
+        document.getElementById("volunteerForm");
+
+    const submitButton =
+        document.getElementById("submitButton");
+
+    const formMessage =
+        document.getElementById("formMessage");
+
+    const successState =
+        document.getElementById("successState");
+
+    const anotherSubmissionBtn =
+        document.getElementById("anotherSubmissionBtn");
+
+    function showSuccessState() {
+        form.style.display = "none";
+        successState.classList.add("visible");
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+    function resetFormState() {
+        form.style.display = "block";
+        successState.classList.remove("visible");
+        formMessage.className = "form-message";
+        formMessage.textContent = "";
+        form.reset();
+        selectedSkills.clear();
+        skillButtons.forEach(function(button) {
+            button.classList.remove("selected");
+        });
+    }
+
+    anotherSubmissionBtn.addEventListener("click", function() {
+        resetFormState();
+    });
+
+
+    form.addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+
+        if (selectedSkills.size === 0) {
+
+            formMessage.textContent =
+                "Please select at least one skill.";
+
+            formMessage.className =
+                "form-message error";
+
+            return;
+
+        }
+
+
+        const data = {
+
+            fullName:
+                document.getElementById("fullName").value.trim(),
+
+            mobile:
+                document.getElementById("mobile").value.trim(),
+
+            whatsapp:
+                document.getElementById("whatsapp").value.trim(),
+
+            email:
+                document.getElementById("email").value.trim(),
+
+            age:
+                document.getElementById("age").value,
+
+            gender:
+                document.getElementById("gender").value,
+
+            district:
+                document.getElementById("district").value,
+
+            constituency:
+                document.getElementById("constituency").value.trim(),
+
+            townCity:
+                document.getElementById("townCity").value.trim(),
+
+            areaWard:
+                document.getElementById("areaWard").value.trim(),
+
+            instagram:
+                document.getElementById("instagram").value.trim(),
+
+            facebook:
+                document.getElementById("facebook").value.trim(),
+
+            twitter:
+                document.getElementById("twitter").value.trim(),
+
+            youtube:
+                document.getElementById("youtube").value.trim(),
+
+            skills:
+                Array.from(selectedSkills),
+
+            preferredActivity:
+                document.getElementById("preferredActivity").value,
+
+            additionalInfo:
+                document.getElementById("additionalInfo").value.trim(),
+
+            submittedAt:
+                new Date().toISOString()
+
+        };
+
+
+        submitButton.disabled = true;
+
+        submitButton.textContent =
+            "Submitting...";
+
+        formMessage.className =
+            "form-message";
+
+
+        try {
+
+            await fetch(
+                SCRIPT_URL,
+                {
+                    method: "POST",
+
+                    mode: "no-cors",
+
+                    headers: {
+                        "Content-Type":
+                            "text/plain;charset=utf-8"
+                    },
+
+                    body:
+                        JSON.stringify(data)
+                }
+            );
+
+
+            formMessage.textContent =
+                "Registration submitted successfully!";
+
+            formMessage.className =
+                "form-message success";
+
+            showSuccessState();
+
+
+        } catch (error) {
+
+            console.error(error);
+
+
+            formMessage.textContent =
+                "Something went wrong. Please try again.";
+
+            formMessage.className =
+                "form-message error";
+
+        }
+
+
+        submitButton.disabled = false;
+
+        submitButton.textContent =
+            "Submit Registration";
+
+    });
+
+
+    /* ==========================================
+       FOOTER TYPING ANIMATION
+    ========================================== */
+
+    const typingText =
+        document.getElementById("typingText");
+
+
+    const phrases = [
+
+        "அடங்க மறு !",
+
+        "அத்து மீறு !",
+
+        "திமிறி எழு !",
+
+        "திருப்பி அடி !"
+
+    ];
+
+
+    let phraseIndex = 0;
+
+    let characterIndex = 0;
+
+    let deleting = false;
+
+
+    function typeAnimation() {
+
+        const currentPhrase =
+            phrases[phraseIndex];
+
+
+        if (!deleting) {
+
+            typingText.textContent =
+                currentPhrase.substring(
+                    0,
+                    characterIndex + 1
+                );
+
+            characterIndex++;
+
+
+            if (
+                characterIndex ===
+                currentPhrase.length
+            ) {
+
+                deleting = true;
+
+                setTimeout(
+                    typeAnimation,
+                    1800
+                );
+
+                return;
+            }
+
+
+            setTimeout(
+                typeAnimation,
+                90
+            );
+
+
+        } else {
+
+            typingText.textContent =
+                currentPhrase.substring(
+                    0,
+                    characterIndex - 1
+                );
+
+            characterIndex--;
+
+
+            if (characterIndex === 0) {
+
+                deleting = false;
+
+                phraseIndex =
+                    (phraseIndex + 1) %
+                    phrases.length;
+
+                setTimeout(
+                    typeAnimation,
+                    400
+                );
+
+                return;
+            }
+
+
+            setTimeout(
+                typeAnimation,
+                55
+            );
+
+        }
+
+    }
+
+
+    typeAnimation();
+
+</script>
+
+</body>
+</html>
