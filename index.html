@@ -871,6 +871,86 @@
             background: #0f172a;
         }
 
+        .manual-pass-box {
+            margin-top: 18px;
+            padding: 16px;
+            border: 1px solid #dfe7f3;
+            border-radius: 14px;
+            background: #f8fbff;
+        }
+
+        .manual-pass-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .manual-pass-row input {
+            flex: 1;
+            min-height: 46px;
+            border: 1px solid #cfd9ea;
+            border-radius: 10px;
+            padding: 0 14px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .manual-pass-row button {
+            min-width: 140px;
+            min-height: 46px;
+            border: none;
+            border-radius: 10px;
+            background: var(--blue);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .pass-lookup-card {
+            margin-top: 18px;
+            padding: 16px;
+            border: 1px solid #dfe7f3;
+            border-radius: 14px;
+            background: #f6fbff;
+            display: none;
+        }
+
+        .pass-lookup-card.visible {
+            display: block;
+        }
+
+        .lookup-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .lookup-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: #ffffff;
+            border: 1px solid #ebf0f7;
+        }
+
+        .lookup-label {
+            color: #44639c;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .lookup-value {
+            color: #111827;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: right;
+            word-break: break-word;
+        }
+
         .scanner-wrap video,
         .scanner-wrap canvas {
             display: block;
@@ -953,6 +1033,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 4mm;
             height: 25mm;
         }
 
@@ -966,8 +1047,26 @@
         }
 
         .pass-header-right {
+            flex: 1;
             text-align: right;
             color: #fff;
+        }
+
+        .pass-leader-wrap {
+            width: 18mm;
+            height: 18mm;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+        }
+
+        .pass-leader {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
         }
 
         .pass-wing {
@@ -1947,16 +2046,24 @@
 
                                 <div class="pass-header">
 
-                                    <img
-                                        src="images/vck-it-wing-logo.jpeg"
-                                        alt="VCK IT Wing Logo"
-                                        class="pass-logo"
-                                    >
+                                    <div class="pass-leader-wrap">
+                                        <img
+                                            src="images/thol-thirumavalavan.jpg"
+                                            alt="Leader Portrait"
+                                            class="pass-leader"
+                                        >
+                                    </div>
 
                                     <div class="pass-header-right">
                                         <div class="pass-wing">VCK IT WING</div>
                                         <div class="pass-meeting">EVENT PASS</div>
                                     </div>
+
+                                    <img
+                                        src="images/vck-it-wing-logo.jpeg"
+                                        alt="VCK IT Wing Logo"
+                                        class="pass-logo"
+                                    >
 
                                 </div>
 
@@ -2012,13 +2119,9 @@
 
                     </div>
 
-                    <button
-                        type="button"
-                        id="downloadPassButton"
-                        class="download-pass-button"
-                    >
-                        Download Meeting Pass
-                    </button>
+                    <div class="download-pass-button" style="display:flex; align-items:center; justify-content:center; background:#eaf2ff; color: var(--blue); border: 1px dashed #b9c9eb; cursor: default;">
+                        Please take a screenshot of this pass
+                    </div>
 
                 </div>
 
@@ -2175,6 +2278,68 @@
                     Camera is starting...
                 </div>
 
+                <div class="manual-pass-box">
+                    <div class="get-pass-subtitle">
+                        Or enter the Pass ID manually
+                    </div>
+                    <div class="manual-pass-row">
+                        <input
+                            type="text"
+                            id="manualPassIdInput"
+                            placeholder="Enter Pass ID"
+                            maxlength="50"
+                        >
+                        <button
+                            type="button"
+                            id="manualPassIdButton"
+                        >
+                            View Pass
+                        </button>
+                    </div>
+                </div>
+
+                <div
+                    id="adminPassLookupCard"
+                    class="pass-lookup-card"
+                >
+                    <div class="get-pass-subtitle">
+                        Pass Details
+                    </div>
+
+                    <div class="lookup-grid">
+                        <div class="lookup-row">
+                            <span class="lookup-label">Name</span>
+                            <span class="lookup-value" id="lookupName">-</span>
+                        </div>
+                        <div class="lookup-row">
+                            <span class="lookup-label">Phone</span>
+                            <span class="lookup-value" id="lookupPhone">-</span>
+                        </div>
+                        <div class="lookup-row">
+                            <span class="lookup-label">District</span>
+                            <span class="lookup-value" id="lookupDistrict">-</span>
+                        </div>
+                        <div class="lookup-row">
+                            <span class="lookup-label">Constituency</span>
+                            <span class="lookup-value" id="lookupConstituency">-</span>
+                        </div>
+                        <div class="lookup-row">
+                            <span class="lookup-label">Pass ID</span>
+                            <span class="lookup-value" id="lookupPassId">-</span>
+                        </div>
+                    </div>
+
+                    <div class="admin-action-row" style="margin-top: 16px;">
+                        <button
+                            type="button"
+                            id="confirmAttendanceButton"
+                            class="submit-button"
+                        >
+                            Mark Attendance
+                        </button>
+                    </div>
+                </div>
+
                 <div class="admin-action-row">
 
                     <button
@@ -2256,10 +2421,10 @@
     ========================================== */
 
     const SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbwgBFboadQ-BhhZ57OX1JozJLADhPnHMU_PuaDcXF_UiowNtghr_Y6-Ob3v9YNdn9vK/exec";
+        "https://script.google.com/macros/s/AKfycbz2gfo8GdZ_VGttOMyX_Wv3XxsLCc4OIvadQLqiNJ5IKkGO6fvi5HQMnLGlQlysrhU/exec";
 
     const ATTENDANCE_SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbykkutW1Iaodx_0cePU6q0TfZe7ZKALSpP-OEKK91XIYIFh7fTeXEYN4mqqkeuA1jFE/exec";
+        "https://script.google.com/macros/s/AKfycbz2gfo8GdZ_VGttOMyX_Wv3XxsLCc4OIvadQLqiNJ5IKkGO6fvi5HQMnLGlQlysrhU/exec";
 
     const ADMIN_CREDENTIALS = Object.freeze({
         username: (
@@ -2458,7 +2623,7 @@
         ========================================== */
 
         const GET_PASS_SCRIPT_URL =
-            "https://script.google.com/macros/s/AKfycbykkutW1Iaodx_0cePU6q0TfZe7ZKALSpP-OEKK91XIYIFh7fTeXEYN4mqqkeuA1jFE/exec";
+            "https://script.google.com/macros/s/AKfycbz2gfo8GdZ_VGttOMyX_Wv3XxsLCc4OIvadQLqiNJ5IKkGO6fvi5HQMnLGlQlysrhU/exec";
 
 
         const getPassNumber =
@@ -2804,27 +2969,21 @@
         DOWNLOAD A6 PDF
         ========================================== */
 
-        document
-            .getElementById("downloadPassButton")
-            .addEventListener(
-                "click",
-                downloadMeetingPass
-            );
+        const downloadPassButton =
+            document.getElementById("downloadPassButton");
+
+        if (downloadPassButton) {
+            downloadPassButton.style.cursor = "default";
+            downloadPassButton.title = "Please take a screenshot of this pass";
+        }
 
 
         async function downloadMeetingPass() {
-
-            const pass =
-                document.getElementById(
-                    "meetingPass"
-                );
-
 
             const passId =
                 document.getElementById(
                     "passId"
                 ).textContent.trim();
-
 
             if (!passId) {
 
@@ -2836,396 +2995,207 @@
 
             }
 
-
             const button =
                 document.getElementById(
                     "downloadPassButton"
                 );
 
-
             button.disabled = true;
-
-            button.textContent =
-                "Creating PDF...";
-
+            button.textContent = "Preparing image...";
 
             try {
 
-                /*
-                * Let the QR render fully before creating PDF.
-                */
-
-                await new Promise(
-                    function(resolve) {
-
-                        setTimeout(
-                            resolve,
-                            300
-                        );
-
-                    }
-                );
-
-
-                const {
-                    jsPDF
-                } = window.jspdf;
-
-
-                const pdf =
-                    new jsPDF(
-                        {
-                            orientation: "portrait",
-
-                            unit: "mm",
-
-                            format: "a6",
-
-                            compress: true
-                        }
-                    );
-
-
-                const pageWidth =
-                    105;
-
-                const pageHeight =
-                    148;
-
-                pdf.setFillColor(
-                    33,
-                    103,
-                    196
-                );
-
-                pdf.rect(
-                    0,
-                    0,
-                    pageWidth,
-                    pageHeight,
-                    "F"
-                );
-
-
-                pdf.setFillColor(
-                    255,
-                    255,
-                    255
-                );
-
-                pdf.rect(
-                    0,
-                    0,
-                    pageWidth,
-                    148,
-                    "F"
-                );
-
-
-                pdf.setFillColor(
-                    33,
-                    103,
-                    196
-                );
-
-                pdf.roundedRect(
-                    -12,
-                    -12,
-                    96,
-                    52,
-                    15,
-                    15,
-                    "F"
-                );
-
-
-                pdf.setFillColor(
-                    220,
-                    38,
-                    52
-                );
-
-                pdf.circle(
-                    87,
-                    18,
-                    20,
-                    "F"
-                );
-
-
-                pdf.setTextColor(
-                    255,
-                    255,
-                    255
-                );
-
-                pdf.setFont(
-                    "helvetica",
-                    "bold"
-                );
-
-                pdf.setFontSize(
-                    15
-                );
-
-                pdf.text(
-                    "VCK IT WING",
-                    12,
-                    16
-                );
-
-
-                pdf.setTextColor(
-                    19,
-                    33,
-                    68
-                );
-
-                pdf.setFontSize(
-                    18
-                );
-
-                pdf.text(
-                    "EVENT PASS",
-                    pageWidth / 2,
-                    44,
-                    {
-                        align: "center"
-                    }
-                );
-
-
-                pdf.setDrawColor(
-                    220,
-                    38,
-                    52
-                );
-
-                pdf.setLineWidth(
-                    0.8
-                );
-
-                pdf.line(
-                    32,
-                    49,
-                    73,
-                    49
-                );
-
-
-                const rows = [
-                    [
-                        "Name",
-                        document.getElementById(
-                            "passName"
-                        ).textContent.trim()
-                    ],
-                    [
-                        "Phone",
-                        document.getElementById(
-                            "passPhone"
-                        ).textContent.trim()
-                    ],
-                    [
-                        "District",
-                        document.getElementById(
-                            "passDistrict"
-                        ).textContent.trim()
-                    ],
-                    [
-                        "Constituency",
-                        document.getElementById(
-                            "passConstituency"
-                        ).textContent.trim()
-                    ],
-                    [
-                        "Pass ID",
-                        document.getElementById(
-                            "passId"
-                        ).textContent.trim()
-                    ]
-                ];
-
-                pdf.setFillColor(
-                    255,
-                    255,
-                    255
-                );
-
-                pdf.setFont(
-                    "helvetica",
-                    "normal"
-                );
-
-                pdf.setFontSize(
-                    7.5
-                );
-
-                let currentY =
-                    58;
-
-                rows.forEach(
-                    function(row) {
-
-                        const label =
-                            row[0];
-
-                        const value =
-                            row[1] || "-";
-
-                        pdf.setTextColor(
-                            19,
-                            33,
-                            68
-                        );
-
-                        pdf.text(
-                            label + ":",
-                            12,
-                            currentY
-                        );
-
-                        pdf.setTextColor(
-                            17,
-                            17,
-                            17
-                        );
-
-                        pdf.text(
-                            value,
-                            34,
-                            currentY,
-                            {
-                                maxWidth: 52
-                            }
-                        );
-
-                        currentY +=
-                            8.2;
-
-                    }
-                );
-
-
-                const qrContainer =
-                    document.getElementById(
-                        "passQRCode"
-                    );
-
-                const qrCanvas =
-                    qrContainer &&
-                    qrContainer.querySelector(
-                        "canvas"
-                    );
-
-                if (qrCanvas) {
-
-                    const qrData =
-                        qrCanvas.toDataURL(
-                            "image/png"
-                        );
-
-                    pdf.addImage(
-                        qrData,
-                        "PNG",
-                        68,
-                        92,
-                        25,
-                        25,
-                        undefined,
-                        "FAST"
-                    );
-
+                function loadImage(url) {
+                    return new Promise(function(resolve, reject) {
+                        const img = new Image();
+                        img.crossOrigin = "anonymous";
+                        img.onload = function() {
+                            resolve(img);
+                        };
+                        img.onerror = function() {
+                            reject(new Error("Image failed to load: " + url));
+                        };
+                        img.src = url;
+                    });
                 }
 
+                function wrapText(context, text, x, y, maxWidth, lineHeight) {
+                    const words = String(text || "-").split(/\s+/);
+                    const lines = [];
+                    let line = "";
 
-                pdf.setTextColor(
-                    85,
-                    85,
-                    85
-                );
+                    words.forEach(function(word) {
+                        const testLine = line ? line + " " + word : word;
+                        const width = context.measureText(testLine).width;
 
-                pdf.setFontSize(
-                    7
-                );
+                        if (width > maxWidth && line) {
+                            lines.push(line);
+                            line = word;
+                        } else {
+                            line = testLine;
+                        }
+                    });
 
-                pdf.text(
-                    "SCAN TO VERIFY",
-                    pageWidth / 2,
-                    121,
-                    {
-                        align: "center"
+                    if (line) {
+                        lines.push(line);
                     }
-                );
 
+                    lines.forEach(function(currentLine, index) {
+                        context.fillText(currentLine, x, y + index * lineHeight);
+                    });
 
-                pdf.setTextColor(
-                    33,
-                    103,
-                    196
-                );
+                    return lines.length;
+                }
 
-                pdf.setFontSize(
-                    8
-                );
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
 
-                pdf.text(
-                    "VCK IT WING",
-                    12,
-                    138
-                );
+                canvas.width = 1050;
+                canvas.height = 1480;
 
+                const blue = "#0033a0";
+                const red = "#d52b1e";
+                const white = "#ffffff";
+                const dark = "#121212";
+                const muted = "#444444";
 
-                pdf.setTextColor(
-                    220,
-                    38,
-                    52
-                );
+                ctx.fillStyle = white;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                pdf.text(
-                    "MEETING PASS",
-                    78,
-                    138,
-                    {
-                        align: "right"
-                    }
-                );
+                ctx.fillStyle = blue;
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(canvas.width, 0);
+                ctx.lineTo(canvas.width, canvas.height * 0.6);
+                ctx.lineTo(0, canvas.height * 0.8);
+                ctx.closePath();
+                ctx.fill();
 
+                ctx.fillStyle = red;
+                ctx.beginPath();
+                ctx.arc(canvas.width * 0.86, canvas.height * 0.14, canvas.width * 0.18, 0, Math.PI * 2);
+                ctx.fill();
 
-                pdf.save(
-                    passId + ".pdf"
-                );
+                const logoImg = await loadImage("images/vck-it-wing-logo.jpeg");
+                const leaderImg = await loadImage("images/thol-thirumavalavan.jpg");
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(145, 120, 60, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.clip();
+                ctx.drawImage(leaderImg, 85, 60, 120, 120);
+                ctx.restore();
+
+                ctx.fillStyle = white;
+                ctx.fillRect(30, 60, 100, 100);
+                ctx.drawImage(logoImg, 42, 72, 76, 76);
+
+                ctx.fillStyle = white;
+                ctx.font = "700 42px Arial";
+                ctx.fillText("VCK IT WING", 160, 110);
+
+                ctx.font = "800 30px Arial";
+                ctx.fillText("EVENT PASS", canvas.width / 2, 220);
+
+                ctx.strokeStyle = red;
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(250, 245);
+                ctx.lineTo(800, 245);
+                ctx.stroke();
+
+                const rows = [
+                    { label: "Name", value: document.getElementById("passName").textContent.trim() || "-" },
+                    { label: "Phone", value: document.getElementById("passPhone").textContent.trim() || "-" },
+                    { label: "District", value: document.getElementById("passDistrict").textContent.trim() || "-" },
+                    { label: "Constituency", value: document.getElementById("passConstituency").textContent.trim() || "-" },
+                    { label: "Pass ID", value: document.getElementById("passId").textContent.trim() || "-" }
+                ];
+
+                let y = 330;
+                rows.forEach(function(row) {
+                    ctx.fillStyle = blue;
+                    ctx.font = "700 22px Arial";
+                    ctx.fillText(row.label + ":", 80, y);
+
+                    ctx.fillStyle = dark;
+                    ctx.font = "600 22px Arial";
+                    const wrapped = wrapText(ctx, row.value, 260, y - 2, 540, 28);
+                    y += 50 + (wrapped - 1) * 20;
+                });
+
+                const qrCanvas = document.getElementById("passQRCode").querySelector("canvas");
+                if (qrCanvas) {
+                    const qrImage = new Image();
+                    const qrData = qrCanvas.toDataURL("image/png");
+                    qrImage.src = qrData;
+                    await new Promise(function(resolve, reject) {
+                        qrImage.onload = resolve;
+                        qrImage.onerror = reject;
+                    });
+                    ctx.drawImage(qrImage, 720, 730, 220, 220);
+                }
+
+                ctx.fillStyle = muted;
+                ctx.font = "700 22px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText("SCAN TO VERIFY", canvas.width / 2, 990);
+
+                ctx.strokeStyle = "#dfe3ea";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(80, 1060);
+                ctx.lineTo(970, 1060);
+                ctx.stroke();
+
+                ctx.textAlign = "left";
+                ctx.fillStyle = blue;
+                ctx.font = "700 20px Arial";
+                ctx.fillText("VCK IT WING", 80, 1145);
+
+                ctx.textAlign = "right";
+                ctx.fillStyle = red;
+                ctx.fillText("MEETING PASS", 970, 1145);
+
+                const link = document.createElement("a");
+                const blob = await new Promise(function(resolve) {
+                    canvas.toBlob(function(file) {
+                        resolve(file);
+                    }, "image/png");
+                });
+
+                const url = URL.createObjectURL(blob);
+                link.href = url;
+                link.download = passId + ".png";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
 
             }
 
             catch (error) {
 
                 console.error(
-                    "PDF error:",
+                    "Image download error:",
                     error
                 );
 
-
                 alert(
-                    "Unable to create the PDF. Please try again."
+                    "Unable to download the pass image. Please try again."
                 );
 
             }
 
             finally {
 
-                button.disabled =
-                    false;
-
-                button.textContent =
-                    "Download A6 Pass";
+                button.disabled = false;
+                button.textContent = "Download Pass Image";
 
             }
 
         }
-
-    const adminAuthView =
-        document.getElementById("adminAuthView");
 
     const adminScanView =
         document.getElementById("adminScanView");
@@ -3257,6 +3227,33 @@
     const scannerStatus =
         document.getElementById("scannerStatus");
 
+    const manualPassIdInput =
+        document.getElementById("manualPassIdInput");
+
+    const manualPassIdButton =
+        document.getElementById("manualPassIdButton");
+
+    const adminPassLookupCard =
+        document.getElementById("adminPassLookupCard");
+
+    const lookupName =
+        document.getElementById("lookupName");
+
+    const lookupPhone =
+        document.getElementById("lookupPhone");
+
+    const lookupDistrict =
+        document.getElementById("lookupDistrict");
+
+    const lookupConstituency =
+        document.getElementById("lookupConstituency");
+
+    const lookupPassId =
+        document.getElementById("lookupPassId");
+
+    const confirmAttendanceButton =
+        document.getElementById("confirmAttendanceButton");
+
     const scannerVideo =
         document.getElementById("scannerVideo");
 
@@ -3287,6 +3284,38 @@
     }
 
 
+    function clearPassLookup() {
+
+        if (adminPassLookupCard) {
+            adminPassLookupCard.classList.remove("visible");
+        }
+
+        if (lookupName) lookupName.textContent = "-";
+        if (lookupPhone) lookupPhone.textContent = "-";
+        if (lookupDistrict) lookupDistrict.textContent = "-";
+        if (lookupConstituency) lookupConstituency.textContent = "-";
+        if (lookupPassId) lookupPassId.textContent = "-";
+
+    }
+
+    function showPassLookup(data) {
+
+        if (!adminPassLookupCard) {
+            return;
+        }
+
+        const user = data || {};
+
+        if (lookupName) lookupName.textContent = user.fullName || user.name || user.full_name || "-";
+        if (lookupPhone) lookupPhone.textContent = user.mobile || user.phone || user.mobileNumber || "-";
+        if (lookupDistrict) lookupDistrict.textContent = user.district || "-";
+        if (lookupConstituency) lookupConstituency.textContent = user.constituency || "-";
+        if (lookupPassId) lookupPassId.textContent = user.passId || user.pass_id || user.passid || "-";
+
+        adminPassLookupCard.classList.add("visible");
+
+    }
+
     function stopScanner() {
 
         if (scannerLoopId) {
@@ -3307,6 +3336,77 @@
 
     }
 
+    async function lookupPassById(passId) {
+
+        const normalizedPassId = String(passId || "").trim();
+
+        if (!normalizedPassId) {
+            return null;
+        }
+
+        const actions = [
+            "getPassById",
+            "lookupPassById",
+            "getPass",
+            "lookupPass",
+            "findPass",
+            "fetchPass"
+        ];
+
+        const endpoints = [
+            GET_PASS_SCRIPT_URL,
+            ATTENDANCE_SCRIPT_URL
+        ];
+
+        for (const endpoint of endpoints) {
+            for (const action of actions) {
+                const url = endpoint + "?action=" + encodeURIComponent(action) + "&passId=" + encodeURIComponent(normalizedPassId);
+                try {
+                    const response = await fetch(url, {
+                        method: "GET",
+                        cache: "no-store"
+                    });
+
+                    if (!response.ok) {
+                        continue;
+                    }
+
+                    const result = await response.json();
+                    const payload = result && (result.data || result.record || result.result || result.user || result.pass || result.passData);
+
+                    if (payload && typeof payload === "object") {
+                        return {
+                            fullName: payload.fullName || payload.name || payload.full_name || payload.Full_Name || "-",
+                            mobile: payload.mobile || payload.phone || payload.mobileNumber || payload.whatsapp || "-",
+                            district: payload.district || "-",
+                            constituency: payload.constituency || payload.constituencyName || "-",
+                            passId: payload.passId || payload.pass_id || payload.passid || normalizedPassId
+                        };
+                    }
+
+                    if (result && result.success === true && (result.passId || result.pass_id || result.data || result.record)) {
+                        const data = result.data || result.record || result;
+                        return {
+                            fullName: data.fullName || data.name || data.full_name || result.fullName || result.name || "-",
+                            mobile: data.mobile || data.phone || data.mobileNumber || result.mobile || result.phone || "-",
+                            district: data.district || result.district || "-",
+                            constituency: data.constituency || result.constituency || "-",
+                            passId: data.passId || data.pass_id || data.passid || result.passId || result.pass_id || normalizedPassId
+                        };
+                    }
+
+                    if (result && result.error && /invalid action/i.test(result.error)) {
+                        continue;
+                    }
+
+                } catch (error) {
+                    console.warn("Pass lookup failed for URL", url, error);
+                }
+            }
+        }
+
+        return null;
+    }
 
     async function startAdminScanner() {
 
@@ -3370,8 +3470,24 @@
 
                     if (code) {
 
+                        const scannedValue = String(code.data || "").trim();
                         stopScanner();
-                        markAttendance(code.data);
+
+                        if (scannedValue) {
+                            setScannerStatus("Pass detected. Loading user details...", "info");
+                            const user = await lookupPassById(scannedValue);
+
+                            if (user) {
+                                showPassLookup(user);
+                                setScannerStatus("Pass found. Please confirm attendance.", "success");
+                                manualPassIdInput.value = user.passId || scannedValue;
+                            } else {
+                                clearPassLookup();
+                                setScannerStatus("Pass ID not found. Please enter the Pass ID manually.", "error");
+                                manualPassIdInput.value = scannedValue;
+                            }
+                        }
+
                         return;
 
                     }
@@ -3422,76 +3538,87 @@
             "info"
         );
 
-        try {
+        const actionCandidates = [
+            "markAttendance",
+            "updateAttendance",
+            "confirmAttendance",
+            "attendanceMark",
+            "markAttend"
+        ];
 
-            const url =
-                ATTENDANCE_SCRIPT_URL +
-                "?action=markAttendance&passId=" +
-                encodeURIComponent(normalizedPassId);
+        const endpoints = [
+            ATTENDANCE_SCRIPT_URL,
+            GET_PASS_SCRIPT_URL
+        ];
 
-            const response =
-                await fetch(
-                    url,
-                    {
+        let lastError = null;
+
+        for (const endpoint of endpoints) {
+            for (const action of actionCandidates) {
+                try {
+                    const url = endpoint + "?action=" + encodeURIComponent(action) + "&passId=" + encodeURIComponent(normalizedPassId);
+                    const response = await fetch(url, {
                         method: "GET",
                         cache: "no-store"
+                    });
+
+                    if (!response.ok) {
+                        lastError = new Error("HTTP " + response.status);
+                        continue;
                     }
-                );
 
-            if (!response.ok) {
-                throw new Error(
-                    "HTTP " + response.status
-                );
+                    const result = await response.json();
+
+                    if (result && result.success === true) {
+                        setScannerStatus(
+                            result.message || "Attendance marked successfully.",
+                            "success"
+                        );
+
+                        if (manualPassIdInput) {
+                            manualPassIdInput.value = "";
+                        }
+
+                        clearPassLookup();
+                        return;
+                    }
+
+                    if (result && result.status === "not_found") {
+                        setScannerStatus(
+                            result.error || "Pass ID not found.",
+                            "error"
+                        );
+                        return;
+                    }
+
+                    if (result && typeof result.error === "string" && /invalid action/i.test(result.error)) {
+                        lastError = new Error(result.error);
+                        continue;
+                    }
+
+                    if (result && result.error) {
+                        setScannerStatus(
+                            result.error,
+                            "error"
+                        );
+                        return;
+                    }
+
+                } catch (error) {
+                    lastError = error;
+                }
             }
-
-            const result =
-                await response.json();
-
-            if (
-                result &&
-                result.success === true
-            ) {
-
-                setScannerStatus(
-                    result.message ||
-                    "Attendance marked successfully.",
-                    "success"
-                );
-
-            } else if (
-                result &&
-                result.status === "not_found"
-            ) {
-
-                setScannerStatus(
-                    result.error ||
-                    "Pass ID not found.",
-                    "error"
-                );
-
-            } else {
-
-                setScannerStatus(
-                    result && result.error ||
-                    "Unable to update attendance.",
-                    "error"
-                );
-
-            }
-
-        } catch (error) {
-
-            console.error(
-                "Attendance update error:",
-                error
-            );
-
-            setScannerStatus(
-                "Unable to update attendance. Please try again.",
-                "error"
-            );
-
         }
+
+        console.error(
+            "Attendance update error:",
+            lastError
+        );
+
+        setScannerStatus(
+            "The attendance endpoint rejected the action. Please update the Apps Script action name or enter the Pass ID manually and confirm.",
+            "error"
+        );
 
     }
 
@@ -3638,6 +3765,77 @@
 
             startAdminScanner();
 
+        }
+    );
+
+    manualPassIdButton.addEventListener(
+        "click",
+        async function() {
+
+            if (!adminAuthenticated) {
+                adminScanView.style.display = "none";
+                adminAuthView.style.display = "block";
+                return;
+            }
+
+            const passId = manualPassIdInput.value.trim();
+
+            if (!passId) {
+                setScannerStatus(
+                    "Please enter the Pass ID to mark attendance.",
+                    "error"
+                );
+                return;
+            }
+
+            setScannerStatus(
+                "Looking up pass details...",
+                "info"
+            );
+
+            const user = await lookupPassById(passId);
+
+            if (user) {
+                showPassLookup(user);
+                setScannerStatus(
+                    "Pass details loaded. Please confirm before marking attendance.",
+                    "success"
+                );
+            } else {
+                clearPassLookup();
+                setScannerStatus(
+                    "Pass not found. Please double-check the Pass ID.",
+                    "error"
+                );
+            }
+
+        }
+    );
+
+    manualPassIdInput.addEventListener(
+        "keydown",
+        function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                manualPassIdButton.click();
+            }
+        }
+    );
+
+    confirmAttendanceButton.addEventListener(
+        "click",
+        function() {
+            const passId = lookupPassId && lookupPassId.textContent.trim();
+
+            if (!passId || passId === "-") {
+                setScannerStatus(
+                    "No valid Pass ID found. Please scan or enter a Pass ID again.",
+                    "error"
+                );
+                return;
+            }
+
+            markAttendance(passId);
         }
     );
 
