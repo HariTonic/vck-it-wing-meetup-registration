@@ -2,6 +2,13 @@
 <html lang="en">
 
 <head>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="admin-config.js"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VCK IT Wing - Volunteer Registration</title>
@@ -707,6 +714,386 @@
                 justify-content: flex-end;
             }
         }
+
+        /* ==========================================
+        GET MEETING PASS
+        ADDITION ONLY
+        ========================================== */
+
+        .get-pass-view {
+            display: none;
+        }
+
+        .get-pass-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px;
+        }
+
+        .get-pass-title {
+            text-align: center;
+            color: var(--blue-deep);
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        .get-pass-subtitle {
+            text-align: center;
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 22px;
+        }
+
+        .get-pass-message {
+            display: none;
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .get-pass-message.success {
+            display: block;
+            color: var(--success);
+            background: #ecfdf3;
+            border: 1px solid #bbf7d0;
+        }
+
+        .get-pass-message.error {
+            display: block;
+            color: var(--error);
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        .get-pass-message.info {
+            display: block;
+            color: var(--blue-dark);
+            background: var(--blue-light);
+            border: 1px solid #cfe1f7;
+        }
+
+        .admin-auth-view,
+        .admin-scan-view {
+            display: none;
+        }
+
+        .admin-auth-card,
+        .admin-scan-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px;
+        }
+
+        .admin-message {
+            display: none;
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .admin-message.success {
+            display: block;
+            color: var(--success);
+            background: #ecfdf3;
+            border: 1px solid #bbf7d0;
+        }
+
+        .admin-message.error {
+            display: block;
+            color: var(--error);
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        .admin-message.info {
+            display: block;
+            color: var(--blue-dark);
+            background: var(--blue-light);
+            border: 1px solid #cfe1f7;
+        }
+
+        .admin-input {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #d6d9de;
+            background: #fff;
+            color: var(--text);
+            font-size: 16px;
+            outline: none;
+        }
+
+        .admin-input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(33, 103, 196, 0.12);
+        }
+
+        .admin-action-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .admin-action-row .submit-button {
+            flex: 1 1 180px;
+            min-width: 160px;
+        }
+
+        .admin-secondary-button {
+            flex: 1 1 140px;
+            min-height: 52px;
+            border: 1px solid var(--blue);
+            border-radius: 12px;
+            background: #fff;
+            color: var(--blue-dark);
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .scanner-wrap {
+            position: relative;
+            margin-top: 20px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid #dfe7f3;
+            background: #0f172a;
+        }
+
+        .scanner-wrap video,
+        .scanner-wrap canvas {
+            display: block;
+            width: 100%;
+            max-height: 350px;
+            object-fit: cover;
+            background: #0f172a;
+        }
+
+        .scanner-wrap canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* ==========================================
+        A6 PASS
+        ========================================== */
+
+        .generated-pass-area {
+            display: none;
+            margin-top: 25px;
+        }
+
+        .generated-pass-area.visible {
+            display: block;
+        }
+
+        .pass-preview-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+            padding: 10px 0 20px;
+        }
+
+        .meeting-pass {
+            width: 105mm;
+            height: 148mm;
+            min-width: 105mm;
+            position: relative;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 8px 30px rgba(0,0,0,.18);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .pass-blue-shape {
+            position: absolute;
+            width: 130mm;
+            height: 65mm;
+            left: -25mm;
+            top: -25mm;
+            background: var(--blue);
+            border-radius: 0 0 60% 45%;
+            transform: rotate(-5deg);
+        }
+
+        .pass-red-shape {
+            position: absolute;
+            width: 70mm;
+            height: 50mm;
+            right: -30mm;
+            top: -18mm;
+            background: var(--red);
+            border-radius: 50%;
+        }
+
+        .pass-inner {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            padding: 8mm;
+        }
+
+        .pass-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 25mm;
+        }
+
+        .pass-logo {
+            width: 18mm;
+            height: 18mm;
+            object-fit: contain;
+            border-radius: 50%;
+            background: #fff;
+            padding: 1mm;
+        }
+
+        .pass-header-right {
+            text-align: right;
+            color: #fff;
+        }
+
+        .pass-wing {
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+        .pass-meeting {
+            font-size: 8px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .pass-title {
+            text-align: center;
+            color: var(--blue-deep);
+            font-size: 20px;
+            font-weight: 900;
+            margin-top: 7mm;
+            letter-spacing: .7px;
+        }
+
+        .pass-line {
+            width: 35mm;
+            height: 1mm;
+            background: var(--red);
+            margin: 2mm auto 4mm;
+            border-radius: 10px;
+        }
+
+        .pass-qr {
+            width: 32mm;
+            height: 32mm;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pass-qr img,
+        .pass-qr canvas {
+            width: 32mm !important;
+            height: 32mm !important;
+        }
+
+        .pass-scan-text {
+            text-align: center;
+            font-size: 7px;
+            font-weight: 900;
+            color: #555;
+            margin-top: 1mm;
+        }
+
+        .pass-details {
+            margin-top: 5mm;
+            border-top: 1px solid #ddd;
+            padding-top: 4mm;
+        }
+
+        .pass-row {
+            display: flex;
+            margin-bottom: 3mm;
+            font-size: 9.5px;
+        }
+
+        .pass-label {
+            width: 31mm;
+            min-width: 31mm;
+            color: var(--blue-deep);
+            font-weight: 900;
+        }
+
+        .pass-value {
+            flex: 1;
+            font-weight: 700;
+            color: #111;
+            word-break: break-word;
+        }
+
+        .pass-footer {
+            position: absolute;
+            bottom: 5mm;
+            left: 8mm;
+            right: 8mm;
+            border-top: 1px solid #ddd;
+            padding-top: 2mm;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .pass-footer-left,
+        .pass-footer-right {
+            font-size: 7px;
+            font-weight: 900;
+        }
+
+        .pass-footer-left {
+            color: var(--blue);
+        }
+
+        .pass-footer-right {
+            color: var(--red);
+        }
+
+        .download-pass-button {
+            width: 100%;
+            min-height: 52px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 12px;
+            background: var(--blue);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .download-pass-button:hover {
+            background: var(--blue-dark);
+        }
+
+        .download-pass-button:disabled {
+            opacity: .65;
+            cursor: not-allowed;
+        }
+
     </style>
 </head>
 
@@ -1471,6 +1858,347 @@
 
         </section>
 
+
+        <!-- GET MEETING PASS -->
+
+        <section
+            id="getPassView"
+            class="get-pass-view"
+        >
+
+            <button
+                type="button"
+                class="back-button"
+                id="backFromGetPassBtn"
+            >
+                ← Back
+            </button>
+
+            <div class="intro">
+
+                <h1>
+                    VCK IT Wing Meetup Application
+                </h1>
+
+                <p>
+                    Check your registration and download your approved meeting pass.
+                </p>
+
+            </div>
+
+            <div class="get-pass-card">
+
+                <div class="get-pass-title">
+                    Get Meeting Pass
+                </div>
+
+                <div class="get-pass-subtitle">
+                    Enter your registered Mobile or WhatsApp number.
+                </div>
+
+                <div class="field">
+
+                    <label for="getPassNumber">
+                        Mobile / WhatsApp Number
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="getPassNumber"
+                        name="getPassNumber"
+                        placeholder="10-digit mobile number"
+                        inputmode="numeric"
+                        pattern="[0-9]{10}"
+                        maxlength="10"
+                    >
+
+                </div>
+
+                <button
+                    type="button"
+                    id="checkPassButton"
+                    class="submit-button"
+                >
+                    Check the Pass
+                </button>
+
+                <div
+                    id="getPassMessage"
+                    class="get-pass-message"
+                ></div>
+
+                <div
+                    id="generatedPassArea"
+                    class="generated-pass-area"
+                >
+
+                    <div class="pass-preview-wrapper">
+
+                        <div
+                            id="meetingPass"
+                            class="meeting-pass"
+                        >
+
+                            <div class="pass-blue-shape"></div>
+                            <div class="pass-red-shape"></div>
+
+                            <div class="pass-inner">
+
+                                <div class="pass-header">
+
+                                    <img
+                                        src="images/vck-it-wing-logo.jpeg"
+                                        alt="VCK IT Wing Logo"
+                                        class="pass-logo"
+                                    >
+
+                                    <div class="pass-header-right">
+                                        <div class="pass-wing">VCK IT WING</div>
+                                        <div class="pass-meeting">EVENT PASS</div>
+                                    </div>
+
+                                </div>
+
+                                <div class="pass-title">
+                                    EVENT PASS
+                                </div>
+
+                                <div class="pass-line"></div>
+
+                                <div class="pass-details">
+
+                                    <div class="pass-row">
+                                        <div class="pass-label">Name</div>
+                                        <div class="pass-value" id="passName">-</div>
+                                    </div>
+
+                                    <div class="pass-row">
+                                        <div class="pass-label">Phone</div>
+                                        <div class="pass-value" id="passPhone">-</div>
+                                    </div>
+
+                                    <div class="pass-row">
+                                        <div class="pass-label">District</div>
+                                        <div class="pass-value" id="passDistrict">-</div>
+                                    </div>
+
+                                    <div class="pass-row">
+                                        <div class="pass-label">Constituency</div>
+                                        <div class="pass-value" id="passConstituency">-</div>
+                                    </div>
+
+                                    <div class="pass-row">
+                                        <div class="pass-label">Pass ID</div>
+                                        <div class="pass-value" id="passId">-</div>
+                                    </div>
+
+                                </div>
+
+                                <div class="pass-qr" id="passQRCode"></div>
+
+                                <div class="pass-scan-text">
+                                    SCAN TO VERIFY
+                                </div>
+
+                                <div class="pass-footer">
+                                    <div class="pass-footer-left">VCK IT WING</div>
+                                    <div class="pass-footer-right">MEETING PASS</div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        id="downloadPassButton"
+                        class="download-pass-button"
+                    >
+                        Download Meeting Pass
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ADMIN AUTH -->
+
+        <section
+            id="adminAuthView"
+            class="admin-auth-view"
+        >
+
+            <button
+                type="button"
+                class="back-button"
+                id="backFromAdminAuthBtn"
+            >
+                ← Back
+            </button>
+
+            <div class="intro">
+
+                <h1>
+                    VCK IT Wing Admin Access
+                </h1>
+
+                <p>
+                    Authenticate to scan attendance and mark the event pass as attended.
+                </p>
+
+            </div>
+
+            <div class="admin-auth-card">
+
+                <div class="get-pass-title">
+                    Admin Login
+                </div>
+
+                <div class="get-pass-subtitle">
+                    Secure access for attendance scanning.
+                </div>
+
+                <div class="field">
+
+                    <label for="adminUsername">
+                        User Name
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="adminUsername"
+                        class="admin-input"
+                        placeholder="Enter user name"
+                    >
+
+                </div>
+
+                <div class="field">
+
+                    <label for="adminPassword">
+                        Password
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="password"
+                        id="adminPassword"
+                        class="admin-input"
+                        placeholder="Enter password"
+                    >
+
+                </div>
+
+                <div class="admin-action-row">
+
+                    <button
+                        type="button"
+                        id="adminLoginButton"
+                        class="submit-button"
+                    >
+                        Authenticate
+                    </button>
+
+                </div>
+
+                <div
+                    id="adminAuthMessage"
+                    class="admin-message"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ADMIN SCANNER -->
+
+        <section
+            id="adminScanView"
+            class="admin-scan-view"
+        >
+
+            <button
+                type="button"
+                class="back-button"
+                id="backFromAdminScanBtn"
+            >
+                ← Back
+            </button>
+
+            <div class="intro">
+
+                <h1>
+                    Attendance Scanner
+                </h1>
+
+                <p>
+                    Scan the QR code on the meeting pass to mark attendance.
+                </p>
+
+            </div>
+
+            <div class="admin-scan-card">
+
+                <div class="get-pass-title">
+                    Scan Pass QR
+                </div>
+
+                <div class="get-pass-subtitle">
+                    Camera access is required to read the pass ID.
+                </div>
+
+                <div class="scanner-wrap">
+                    <video
+                        id="scannerVideo"
+                        autoplay
+                        playsinline
+                    ></video>
+                    <canvas
+                        id="scannerCanvas"
+                        width="320"
+                        height="240"
+                    ></canvas>
+                </div>
+
+                <div
+                    id="scannerStatus"
+                    class="admin-message info"
+                >
+                    Camera is starting...
+                </div>
+
+                <div class="admin-action-row">
+
+                    <button
+                        type="button"
+                        id="startScannerButton"
+                        class="submit-button"
+                    >
+                        Start Scanner
+                    </button>
+
+                    <button
+                        type="button"
+                        id="adminLogoutButton"
+                        class="admin-secondary-button"
+                    >
+                        Log Out
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
     </main>
 
 
@@ -1529,6 +2257,20 @@
 
     const SCRIPT_URL =
         "https://script.google.com/macros/s/AKfycbwgBFboadQ-BhhZ57OX1JozJLADhPnHMU_PuaDcXF_UiowNtghr_Y6-Ob3v9YNdn9vK/exec";
+
+    const ATTENDANCE_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbykkutW1Iaodx_0cePU6q0TfZe7ZKALSpP-OEKK91XIYIFh7fTeXEYN4mqqkeuA1jFE/exec";
+
+    const ADMIN_CREDENTIALS = Object.freeze({
+        username: (
+            window.__ADMIN_CONFIG__ &&
+            window.__ADMIN_CONFIG__.username
+        ) || "VCKITWingSalem",
+        password: (
+            window.__ADMIN_CONFIG__ &&
+            window.__ADMIN_CONFIG__.password
+        ) || "HariharanMS1!"
+    });
 
 
     /* ==========================================
@@ -1666,25 +2408,1235 @@
     );
 
 
-    getMeetingPassBtn.addEventListener(
-        "click",
-        function() {
+        /* ==========================================
+        GET MEETING PASS
+        ========================================== */
 
-            alert(
-                "Get Meeting Pass will be available soon."
+        const getPassView =
+            document.getElementById("getPassView");
+
+        const backFromGetPassBtn =
+            document.getElementById("backFromGetPassBtn");
+
+
+        getMeetingPassBtn.addEventListener(
+            "click",
+            function() {
+
+                landingScreen.style.display = "none";
+
+                applyView.style.display = "none";
+
+                getPassView.style.display = "block";
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+
+            }
+        );
+
+
+        backFromGetPassBtn.addEventListener(
+            "click",
+            function() {
+
+                getPassView.style.display = "none";
+
+                landingScreen.style.display = "flex";
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+
+            }
+        );
+        /* ==========================================
+        GET PASS GOOGLE APPS SCRIPT
+        ========================================== */
+
+        const GET_PASS_SCRIPT_URL =
+            "https://script.google.com/macros/s/AKfycbykkutW1Iaodx_0cePU6q0TfZe7ZKALSpP-OEKK91XIYIFh7fTeXEYN4mqqkeuA1jFE/exec";
+
+
+        const getPassNumber =
+            document.getElementById("getPassNumber");
+
+        const checkPassButton =
+            document.getElementById("checkPassButton");
+
+        const getPassMessage =
+            document.getElementById("getPassMessage");
+
+        const generatedPassArea =
+            document.getElementById("generatedPassArea");
+
+
+        /* ==========================================
+        PHONE INPUT
+        ========================================== */
+
+        getPassNumber.addEventListener(
+            "input",
+            function() {
+
+                getPassNumber.value =
+                    getPassNumber.value
+                        .replace(/\D/g, "")
+                        .slice(0, 10);
+
+            }
+        );
+
+
+        /* ==========================================
+        MESSAGE
+        ========================================== */
+
+        function showGetPassMessage(
+            message,
+            type
+        ) {
+
+            getPassMessage.textContent =
+                message;
+
+            getPassMessage.className =
+                "get-pass-message " + type;
+
+        }
+
+
+        /* ==========================================
+        CHECK PASS
+        ========================================== */
+
+        checkPassButton.addEventListener(
+            "click",
+            checkMeetingPass
+        );
+
+
+        getPassNumber.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Enter") {
+
+                    event.preventDefault();
+
+                    checkMeetingPass();
+
+                }
+
+            }
+        );
+
+
+        async function checkMeetingPass() {
+
+            const number =
+                getPassNumber.value
+                    .trim()
+                    .replace(/\D/g, "")
+                    .slice(0, 10);
+
+            getPassNumber.value = number;
+
+
+            if (!/^[0-9]{10}$/.test(number)) {
+
+                showGetPassMessage(
+                    "Please enter a valid 10-digit Mobile or WhatsApp number.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            checkPassButton.disabled = true;
+
+            checkPassButton.textContent =
+                "Checking...";
+
+
+            generatedPassArea.classList.remove(
+                "visible"
+            );
+
+
+            showGetPassMessage(
+                "Checking your registration...",
+                "info"
+            );
+
+
+            try {
+
+                const url =
+                    GET_PASS_SCRIPT_URL +
+                    "?action=checkPass&number=" +
+                    encodeURIComponent(number);
+
+
+                const response =
+                    await fetch(
+                        url,
+                        {
+                            method: "GET",
+                            cache: "no-store"
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "HTTP " + response.status
+                    );
+
+                }
+
+
+                const result =
+                    await response.json();
+
+
+                console.log(
+                    "Get Pass Response:",
+                    result
+                );
+
+                const apiStatus =
+                    String(
+                        result && result.status
+                            ? result.status
+                            : ""
+                    )
+                        .trim()
+                        .toLowerCase();
+
+                const permissionStatus =
+                    String(
+                        result && result.data
+                            ? (result.data.Permission_Status ||
+                                result.data.permissionStatus ||
+                                result.data.permission_status || "")
+                            : ""
+                    )
+                        .trim()
+                        .toLowerCase();
+
+
+                if (
+                    result &&
+                    result.success === true &&
+                    (apiStatus === "approved" ||
+                        permissionStatus === "approved")
+                ) {
+
+                    generateMeetingPass(
+                        result.data
+                    );
+
+
+                    showGetPassMessage(
+                        "Your meeting pass is approved.",
+                        "success"
+                    );
+
+
+                    generatedPassArea.classList.add(
+                        "visible"
+                    );
+
+                }
+
+                else if (
+                    apiStatus === "not_approved" ||
+                    permissionStatus === "not_approved"
+                ) {
+
+                    showGetPassMessage(
+                        result && result.error ||
+                        "Your pass has not been approved yet.",
+                        "error"
+                    );
+
+                }
+
+                else if (
+                    apiStatus === "not_found" ||
+                    permissionStatus === "not_found"
+                ) {
+
+                    showGetPassMessage(
+                        result && result.error ||
+                        "No registration found with this mobile or WhatsApp number.",
+                        "error"
+                    );
+
+                }
+
+                else {
+
+                    showGetPassMessage(
+                        result && result.error ||
+                        "Unable to find your meeting pass.",
+                        "error"
+                    );
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Get pass error:",
+                    error
+                );
+
+
+                showGetPassMessage(
+                    "Unable to connect to the pass server. Please try again.",
+                    "error"
+                );
+
+            }
+
+            finally {
+
+                checkPassButton.disabled =
+                    false;
+
+                checkPassButton.textContent =
+                    "Check the Pass";
+
+            }
+
+        }
+
+
+        /* ==========================================
+        GENERATE PASS
+        ========================================== */
+
+        function generateMeetingPass(data) {
+
+            document.getElementById(
+                "passName"
+            ).textContent =
+                data.fullName || "-";
+
+
+            document.getElementById(
+                "passPhone"
+            ).textContent =
+                data.mobile || "-";
+
+
+            document.getElementById(
+                "passDistrict"
+            ).textContent =
+                data.district || "-";
+
+
+            document.getElementById(
+                "passConstituency"
+            ).textContent =
+                data.constituency || "-";
+
+
+            document.getElementById(
+                "passId"
+            ).textContent =
+                data.passId || "-";
+
+
+            /* ======================================
+            QR = ONLY PASS ID
+            ====================================== */
+
+            const qrContainer =
+                document.getElementById(
+                    "passQRCode"
+                );
+
+
+            qrContainer.innerHTML = "";
+
+
+            if (!data.passId) {
+
+                showGetPassMessage(
+                    "Pass ID is missing. Please contact the administrator.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            new QRCode(
+                qrContainer,
+                {
+                    text: String(data.passId),
+
+                    width: 128,
+
+                    height: 128,
+
+                    correctLevel:
+                        QRCode.CorrectLevel.H
+                }
             );
 
         }
-    );
+
+
+        /* ==========================================
+        DOWNLOAD A6 PDF
+        ========================================== */
+
+        document
+            .getElementById("downloadPassButton")
+            .addEventListener(
+                "click",
+                downloadMeetingPass
+            );
+
+
+        async function downloadMeetingPass() {
+
+            const pass =
+                document.getElementById(
+                    "meetingPass"
+                );
+
+
+            const passId =
+                document.getElementById(
+                    "passId"
+                ).textContent.trim();
+
+
+            if (!passId) {
+
+                alert(
+                    "Pass ID is missing."
+                );
+
+                return;
+
+            }
+
+
+            const button =
+                document.getElementById(
+                    "downloadPassButton"
+                );
+
+
+            button.disabled = true;
+
+            button.textContent =
+                "Creating PDF...";
+
+
+            try {
+
+                /*
+                * Let the QR render fully before creating PDF.
+                */
+
+                await new Promise(
+                    function(resolve) {
+
+                        setTimeout(
+                            resolve,
+                            300
+                        );
+
+                    }
+                );
+
+
+                const {
+                    jsPDF
+                } = window.jspdf;
+
+
+                const pdf =
+                    new jsPDF(
+                        {
+                            orientation: "portrait",
+
+                            unit: "mm",
+
+                            format: "a6",
+
+                            compress: true
+                        }
+                    );
+
+
+                const pageWidth =
+                    105;
+
+                const pageHeight =
+                    148;
+
+                pdf.setFillColor(
+                    33,
+                    103,
+                    196
+                );
+
+                pdf.rect(
+                    0,
+                    0,
+                    pageWidth,
+                    pageHeight,
+                    "F"
+                );
+
+
+                pdf.setFillColor(
+                    255,
+                    255,
+                    255
+                );
+
+                pdf.rect(
+                    0,
+                    0,
+                    pageWidth,
+                    148,
+                    "F"
+                );
+
+
+                pdf.setFillColor(
+                    33,
+                    103,
+                    196
+                );
+
+                pdf.roundedRect(
+                    -12,
+                    -12,
+                    96,
+                    52,
+                    15,
+                    15,
+                    "F"
+                );
+
+
+                pdf.setFillColor(
+                    220,
+                    38,
+                    52
+                );
+
+                pdf.circle(
+                    87,
+                    18,
+                    20,
+                    "F"
+                );
+
+
+                pdf.setTextColor(
+                    255,
+                    255,
+                    255
+                );
+
+                pdf.setFont(
+                    "helvetica",
+                    "bold"
+                );
+
+                pdf.setFontSize(
+                    15
+                );
+
+                pdf.text(
+                    "VCK IT WING",
+                    12,
+                    16
+                );
+
+
+                pdf.setTextColor(
+                    19,
+                    33,
+                    68
+                );
+
+                pdf.setFontSize(
+                    18
+                );
+
+                pdf.text(
+                    "EVENT PASS",
+                    pageWidth / 2,
+                    44,
+                    {
+                        align: "center"
+                    }
+                );
+
+
+                pdf.setDrawColor(
+                    220,
+                    38,
+                    52
+                );
+
+                pdf.setLineWidth(
+                    0.8
+                );
+
+                pdf.line(
+                    32,
+                    49,
+                    73,
+                    49
+                );
+
+
+                const rows = [
+                    [
+                        "Name",
+                        document.getElementById(
+                            "passName"
+                        ).textContent.trim()
+                    ],
+                    [
+                        "Phone",
+                        document.getElementById(
+                            "passPhone"
+                        ).textContent.trim()
+                    ],
+                    [
+                        "District",
+                        document.getElementById(
+                            "passDistrict"
+                        ).textContent.trim()
+                    ],
+                    [
+                        "Constituency",
+                        document.getElementById(
+                            "passConstituency"
+                        ).textContent.trim()
+                    ],
+                    [
+                        "Pass ID",
+                        document.getElementById(
+                            "passId"
+                        ).textContent.trim()
+                    ]
+                ];
+
+                pdf.setFillColor(
+                    255,
+                    255,
+                    255
+                );
+
+                pdf.setFont(
+                    "helvetica",
+                    "normal"
+                );
+
+                pdf.setFontSize(
+                    7.5
+                );
+
+                let currentY =
+                    58;
+
+                rows.forEach(
+                    function(row) {
+
+                        const label =
+                            row[0];
+
+                        const value =
+                            row[1] || "-";
+
+                        pdf.setTextColor(
+                            19,
+                            33,
+                            68
+                        );
+
+                        pdf.text(
+                            label + ":",
+                            12,
+                            currentY
+                        );
+
+                        pdf.setTextColor(
+                            17,
+                            17,
+                            17
+                        );
+
+                        pdf.text(
+                            value,
+                            34,
+                            currentY,
+                            {
+                                maxWidth: 52
+                            }
+                        );
+
+                        currentY +=
+                            8.2;
+
+                    }
+                );
+
+
+                const qrContainer =
+                    document.getElementById(
+                        "passQRCode"
+                    );
+
+                const qrCanvas =
+                    qrContainer &&
+                    qrContainer.querySelector(
+                        "canvas"
+                    );
+
+                if (qrCanvas) {
+
+                    const qrData =
+                        qrCanvas.toDataURL(
+                            "image/png"
+                        );
+
+                    pdf.addImage(
+                        qrData,
+                        "PNG",
+                        68,
+                        92,
+                        25,
+                        25,
+                        undefined,
+                        "FAST"
+                    );
+
+                }
+
+
+                pdf.setTextColor(
+                    85,
+                    85,
+                    85
+                );
+
+                pdf.setFontSize(
+                    7
+                );
+
+                pdf.text(
+                    "SCAN TO VERIFY",
+                    pageWidth / 2,
+                    121,
+                    {
+                        align: "center"
+                    }
+                );
+
+
+                pdf.setTextColor(
+                    33,
+                    103,
+                    196
+                );
+
+                pdf.setFontSize(
+                    8
+                );
+
+                pdf.text(
+                    "VCK IT WING",
+                    12,
+                    138
+                );
+
+
+                pdf.setTextColor(
+                    220,
+                    38,
+                    52
+                );
+
+                pdf.text(
+                    "MEETING PASS",
+                    78,
+                    138,
+                    {
+                        align: "right"
+                    }
+                );
+
+
+                pdf.save(
+                    passId + ".pdf"
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "PDF error:",
+                    error
+                );
+
+
+                alert(
+                    "Unable to create the PDF. Please try again."
+                );
+
+            }
+
+            finally {
+
+                button.disabled =
+                    false;
+
+                button.textContent =
+                    "Download A6 Pass";
+
+            }
+
+        }
+
+    const adminAuthView =
+        document.getElementById("adminAuthView");
+
+    const adminScanView =
+        document.getElementById("adminScanView");
+
+    const adminUsernameInput =
+        document.getElementById("adminUsername");
+
+    const adminPasswordInput =
+        document.getElementById("adminPassword");
+
+    const adminLoginButton =
+        document.getElementById("adminLoginButton");
+
+    const adminAuthMessage =
+        document.getElementById("adminAuthMessage");
+
+    const backFromAdminAuthBtn =
+        document.getElementById("backFromAdminAuthBtn");
+
+    const backFromAdminScanBtn =
+        document.getElementById("backFromAdminScanBtn");
+
+    const startScannerButton =
+        document.getElementById("startScannerButton");
+
+    const adminLogoutButton =
+        document.getElementById("adminLogoutButton");
+
+    const scannerStatus =
+        document.getElementById("scannerStatus");
+
+    const scannerVideo =
+        document.getElementById("scannerVideo");
+
+    const scannerCanvas =
+        document.getElementById("scannerCanvas");
+
+    const scannerContext =
+        scannerCanvas.getContext("2d");
+
+    let adminAuthenticated = false;
+    let scannerStream = null;
+    let scannerLoopId = null;
+
+
+    function setAdminMessage(message, type) {
+
+        adminAuthMessage.textContent = message;
+        adminAuthMessage.className = "admin-message " + type;
+
+    }
+
+
+    function setScannerStatus(message, type) {
+
+        scannerStatus.textContent = message;
+        scannerStatus.className = "admin-message " + type;
+
+    }
+
+
+    function stopScanner() {
+
+        if (scannerLoopId) {
+            cancelAnimationFrame(scannerLoopId);
+            scannerLoopId = null;
+        }
+
+        if (scannerStream) {
+            scannerStream.getTracks().forEach(function(track) {
+                track.stop();
+            });
+            scannerStream = null;
+        }
+
+        if (scannerVideo) {
+            scannerVideo.srcObject = null;
+        }
+
+    }
+
+
+    async function startAdminScanner() {
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+
+            setScannerStatus(
+                "Camera access is not supported in this browser.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        try {
+
+            setScannerStatus(
+                "Camera is starting...",
+                "info"
+            );
+
+            scannerStream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: "environment"
+                },
+                audio: false
+            });
+
+            scannerVideo.srcObject = scannerStream;
+            await scannerVideo.play();
+
+            const scanFrame = function() {
+
+                if (scannerVideo.readyState >= 2) {
+
+                    scannerCanvas.width = scannerVideo.videoWidth || 320;
+                    scannerCanvas.height = scannerVideo.videoHeight || 240;
+
+                    scannerContext.drawImage(
+                        scannerVideo,
+                        0,
+                        0,
+                        scannerCanvas.width,
+                        scannerCanvas.height
+                    );
+
+                    const imageData =
+                        scannerContext.getImageData(
+                            0,
+                            0,
+                            scannerCanvas.width,
+                            scannerCanvas.height
+                        );
+
+                    const code =
+                        jsQR(
+                            imageData.data,
+                            imageData.width,
+                            imageData.height
+                        );
+
+                    if (code) {
+
+                        stopScanner();
+                        markAttendance(code.data);
+                        return;
+
+                    }
+
+                }
+
+                scannerLoopId = requestAnimationFrame(scanFrame);
+
+            };
+
+            scannerLoopId = requestAnimationFrame(scanFrame);
+
+        } catch (error) {
+
+            console.error(
+                "Scanner error:",
+                error
+            );
+
+            setScannerStatus(
+                "Unable to access the camera. Please allow camera access and try again.",
+                "error"
+            );
+
+        }
+
+    }
+
+
+    async function markAttendance(passId) {
+
+        const normalizedPassId =
+            String(passId || "").trim();
+
+        if (!normalizedPassId) {
+
+            setScannerStatus(
+                "No valid pass ID was detected.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        setScannerStatus(
+            "Updating attendance...",
+            "info"
+        );
+
+        try {
+
+            const url =
+                ATTENDANCE_SCRIPT_URL +
+                "?action=markAttendance&passId=" +
+                encodeURIComponent(normalizedPassId);
+
+            const response =
+                await fetch(
+                    url,
+                    {
+                        method: "GET",
+                        cache: "no-store"
+                    }
+                );
+
+            if (!response.ok) {
+                throw new Error(
+                    "HTTP " + response.status
+                );
+            }
+
+            const result =
+                await response.json();
+
+            if (
+                result &&
+                result.success === true
+            ) {
+
+                setScannerStatus(
+                    result.message ||
+                    "Attendance marked successfully.",
+                    "success"
+                );
+
+            } else if (
+                result &&
+                result.status === "not_found"
+            ) {
+
+                setScannerStatus(
+                    result.error ||
+                    "Pass ID not found.",
+                    "error"
+                );
+
+            } else {
+
+                setScannerStatus(
+                    result && result.error ||
+                    "Unable to update attendance.",
+                    "error"
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Attendance update error:",
+                error
+            );
+
+            setScannerStatus(
+                "Unable to update attendance. Please try again.",
+                "error"
+            );
+
+        }
+
+    }
 
 
     scanPassBtn.addEventListener(
         "click",
         function() {
 
-            alert(
-                "Admin Pass Scanner will be available soon."
+            landingScreen.style.display = "none";
+            applyView.style.display = "none";
+            getPassView.style.display = "none";
+            adminAuthView.style.display = "block";
+            adminScanView.style.display = "none";
+            adminAuthenticated = false;
+            adminUsernameInput.value = "";
+            adminPasswordInput.value = "";
+            setAdminMessage("", "info");
+            stopScanner();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+    );
+
+
+    backFromAdminAuthBtn.addEventListener(
+        "click",
+        function() {
+
+            adminAuthView.style.display = "none";
+            landingScreen.style.display = "flex";
+            stopScanner();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+    );
+
+
+    backFromAdminScanBtn.addEventListener(
+        "click",
+        function() {
+
+            adminScanView.style.display = "none";
+            landingScreen.style.display = "flex";
+            adminAuthenticated = false;
+            stopScanner();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+    );
+
+
+    adminLoginButton.addEventListener(
+        "click",
+        function() {
+
+            const username =
+                adminUsernameInput.value.trim();
+
+            const password =
+                adminPasswordInput.value;
+
+            if (!username || !password) {
+
+                setAdminMessage(
+                    "Please enter both user name and password.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+            if (
+                username === ADMIN_CREDENTIALS.username &&
+                password === ADMIN_CREDENTIALS.password
+            ) {
+
+                adminAuthenticated = true;
+                adminAuthView.style.display = "none";
+                adminScanView.style.display = "block";
+                setAdminMessage("", "info");
+                setScannerStatus(
+                    "Camera is starting...",
+                    "info"
+                );
+                startAdminScanner();
+
+            } else {
+
+                setAdminMessage(
+                    "Invalid user name or password.",
+                    "error"
+                );
+
+            }
+
+        }
+    );
+
+
+    adminLogoutButton.addEventListener(
+        "click",
+        function() {
+
+            adminAuthenticated = false;
+            stopScanner();
+            adminScanView.style.display = "none";
+            adminAuthView.style.display = "block";
+            adminUsernameInput.value = "";
+            adminPasswordInput.value = "";
+            setAdminMessage("", "info");
+            setScannerStatus(
+                "Camera is starting...",
+                "info"
             );
+
+        }
+    );
+
+
+    startScannerButton.addEventListener(
+        "click",
+        function() {
+
+            if (!adminAuthenticated) {
+
+                adminScanView.style.display = "none";
+                adminAuthView.style.display = "block";
+                return;
+
+            }
+
+            startAdminScanner();
 
         }
     );
