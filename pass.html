@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VCK IT Wing Event Pass Template</title>
+    <style>
+        /* A6 Print Setup */
+        @page {
+            size: A6 portrait; /* 105mm x 148mm */
+            margin: 0;
+        }
+
+        :root {
+            --primary-blue: #0033a0;
+            --primary-red: #d52b1e;
+            --accent-gold: #d4af37;
+            --bg-light: #f8f9fa;
+            --text-dark: #111111;
+            --text-muted: #555555;
+            --border-color: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        }
+
+        body {
+            width: 105mm;
+            height: 148mm;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Pass Container */
+        .pass-card {
+            width: 105mm;
+            height: 148mm;
+            background: #ffffff;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 8mm;
+            border: 1px solid var(--accent-gold);
+        }
+
+        /* Background Geometric Curves */
+        .bg-curve-blue {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 48mm;
+            background: var(--primary-blue);
+            clip-path: polygon(0 0, 100% 0, 100% 75%, 0 100%);
+            z-index: 1;
+        }
+
+        .bg-curve-red {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 52mm;
+            background: var(--primary-red);
+            clip-path: circle(75% at 90% 10%);
+            z-index: 2;
+            opacity: 0.9;
+        }
+
+        /* Content Wrapper */
+        .content {
+            position: relative;
+            z-index: 3;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Layout */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 4px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 6mm;
+        }
+
+        .header-title {
+            color: #ffffff;
+            font-size: 11pt;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        /* Compact Logo Style */
+        .logo-box {
+            width: 14mm;
+            height: 14mm;
+            background: #ffffff;
+            border-radius: 4px;
+            padding: 1px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* QR Section Container */
+        .qr-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 4mm;
+        }
+
+        .qr-box {
+            width: 38mm;
+            height: 38mm;
+            background: #ffffff;
+            border-radius: 6px;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 4px;
+            background-color: #fafafa;
+        }
+
+        .qr-placeholder-text {
+            font-size: 7.5pt;
+            font-weight: 700;
+            color: #777777;
+            border: 1px dashed #aaaaaa;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+        }
+
+        .scan-text {
+            font-size: 6.5pt;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-top: 3mm;
+            text-transform: uppercase;
+        }
+
+        /* Pass Title */
+        .event-title {
+            text-align: center;
+            font-size: 16pt;
+            font-weight: 900;
+            color: var(--text-dark);
+            letter-spacing: 1.5px;
+            margin-bottom: 4mm;
+            text-transform: uppercase;
+        }
+
+        /* Fields & Data */
+        .info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5mm;
+            flex-grow: 1;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5mm;
+        }
+
+        .row-two-col {
+            display: flex;
+            gap: 4mm;
+        }
+
+        .row-two-col .field-group {
+            flex: 1;
+        }
+
+        .label {
+            font-size: 6.5pt;
+            font-weight: 800;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5mm;
+        }
+
+        .value {
+            font-size: 9.5pt;
+            font-weight: 700;
+            color: var(--text-dark);
+            word-break: break-word;
+        }
+
+        .value.placeholder {
+            color: #888888;
+            font-weight: 600;
+            font-style: italic;
+        }
+
+        /* Footer Element */
+        .footer {
+            margin-top: auto;
+            padding-top: 2mm;
+            border-top: 2px solid var(--primary-red);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-text {
+            font-size: 6.5pt;
+            font-weight: 800;
+            color: var(--primary-blue);
+            letter-spacing: 1px;
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pass-card">
+        <!-- Background Curves -->
+        <div class="bg-curve-blue"></div>
+        <div class="bg-curve-red"></div>
+
+        <div class="content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-title">VCK IT WING</div>
+                <div class="logo-box">
+                    <!-- Replace logo_src with actual image URL or Base64 string -->
+                    <img src="https://via.placeholder.com/60?text=VCK+LOGO" alt="VCK IT Wing Logo">
+                </div>
+            </div>
+
+            <!-- Central QR Placeholder -->
+            <div class="qr-section">
+                <div class="qr-box">
+                    <div class="qr-placeholder-text">
+                        [QR CODE PLACEHOLDER]
+                    </div>
+                </div>
+                <div class="scan-text">Scan to Verify</div>
+            </div>
+
+            <!-- Title -->
+            <div class="event-title">Event Pass</div>
+
+            <!-- Attendee Details Section -->
+            <div class="info-section">
+                <div class="field-group">
+                    <span class="label">Name</span>
+                    <span class="value placeholder">[NAME PLACEHOLDER]</span>
+                </div>
+
+                <div class="field-group">
+                    <span class="label">Phone</span>
+                    <span class="value">+91 98450 12345</span>
+                </div>
+
+                <div class="row-two-col">
+                    <div class="field-group">
+                        <span class="label">District</span>
+                        <span class="value placeholder">[DISTRICT PLACEHOLDER]</span>
+                    </div>
+                    <div class="field-group">
+                        <span class="label">Constituency</span>
+                        <span class="value placeholder">[CONSTITUENCY PLACEHOLDER]</span>
+                    </div>
+                </div>
+
+                <div class="field-group" style="border-bottom: none;">
+                    <span class="label">Pass ID</span>
+                    <span class="value placeholder">[PASS ID PLACEHOLDER]</span>
+                </div>
+            </div>
+
+            <!-- Footer Line -->
+            <div class="footer">
+                <div class="footer-text">VCK IT WING</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
