@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Get Meeting Pass | VCK IT Wing</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --blue: #0754b8;
+      --blue-dark: #06356f;
+      --blue-deep: #032c60;
+      --blue-light: #eaf4ff;
+      --red: #d91f2d;
+      --white: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d9e1ea;
+      --success: #15803d;
+      --error: #dc2626;
+      --shadow: 0 8px 30px rgba(3, 44, 96, .10);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f5f8fc; color: var(--text); line-height: 1.5;
+    }
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .site-header {
+      background: linear-gradient(135deg, var(--blue-deep), var(--blue));
+      color: var(--white);
+      padding: 18px 16px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .site-header::after {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+      right: -80px;
+      bottom: -90px;
+    }
+    .site-header .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      min-height: 48px;
+      position: relative;
+      z-index: 2;
+    }
+    .site-header .wing-logo {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: var(--white);
+      padding: 4px;
+    }
+    .site-header .header-content {
+      text-align: center;
+      max-width: 600px;
+      margin: 12px auto 0;
+      position: relative;
+      z-index: 2;
+    }
+    .site-header .leader-image {
+      width: 105px;
+      height: 105px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid rgba(255,255,255,.95);
+      margin-bottom: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,.20);
+    }
+    .site-header .organization {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      opacity: .9;
+    }
+    .site-header .header-title {
+      font-size: 28px;
+      font-weight: 900;
+      margin-top: 4px;
+      letter-spacing: -0.5px;
+    }
+    .site-header .header-tagline {
+      margin-top: 5px;
+      font-size: 14px;
+      opacity: .9;
+    }
+    .site-header .brand-line {
+      width: 52px;
+      height: 4px;
+      background: var(--red);
+      border-radius: 10px;
+      margin: 14px auto 0;
+    }
+    .page-body { flex: 1; padding: 24px 14px 50px; }
+    .topbar { max-width: 900px; margin: 0 auto 18px; }
+    .back-link { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 9px 16px; border-radius: 10px; background: var(--white); border: 1px solid var(--border); color: var(--blue-dark); text-decoration: none; font-size: 14px; font-weight: 700; }
+    .card { max-width: 760px; margin: 0 auto; background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; }
+    .site-footer {
+      background: #032c60;
+      color: var(--white);
+      text-align: center;
+      padding: 18px 16px 20px;
+      font-size: 13px;
+      letter-spacing: 0.4px;
+    }
+    .site-footer strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .title { text-align: center; color: var(--blue-deep); font-size: 24px; font-weight: 900; margin-bottom: 8px; }
+    .subtitle { text-align: center; color: var(--muted); font-size: 14px; margin-bottom: 18px; }
+    .field { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 7px; font-size: 14px; font-weight: 700; color: var(--text); }
+    .required { color: var(--red); }
+    input {
+      width: 100%; border: 1px solid var(--border); border-radius: 11px; padding: 13px 12px; font-size: 15px; font-family: inherit; outline: none; background: var(--white); color: var(--text); min-height: 48px;
+    }
+    input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(7,84,184,.10); }
+    .submit-button {
+      width: 100%; min-height: 52px; border: none; border-radius: 12px; background: var(--blue); color: var(--white); font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 8px; transition: transform .15s, opacity .2s, background .2s;
+    }
+    .submit-button:hover { background: var(--blue-dark); }
+    .submit-button:disabled { opacity: .65; cursor: not-allowed; }
+    .message { display: none; margin-top: 14px; padding: 12px; border-radius: 10px; text-align: center; font-size: 14px; font-weight: 700; }
+    .message.success { display: block; color: var(--success); background: #ecfdf3; border: 1px solid #bbf7d0; }
+    .message.error { display: block; color: var(--error); background: #fef2f2; border: 1px solid #fecaca; }
+    .message.info { display: block; color: var(--blue-dark); background: var(--blue-light); border: 1px solid #cfe1f7; }
+    .pass-area { display: none; margin-top: 20px; }
+    .pass-area.visible { display: block; }
+    .pass-preview { width: 100%; display: flex; justify-content: center; overflow-x: auto; padding: 10px 0 20px; }
+    .meeting-pass {
+      width: 105mm; height: 148mm; min-width: 105mm; position: relative; overflow: hidden; background: #ffffff; box-shadow: 0 8px 30px rgba(0,0,0,.18); font-family: Arial, Helvetica, sans-serif;
+    }
+    .pass-blue-shape { position: absolute; width: 130mm; height: 65mm; left: -25mm; top: -25mm; background: var(--blue); border-radius: 0 0 60% 45%; transform: rotate(-5deg); }
+    .pass-red-shape { position: absolute; width: 70mm; height: 50mm; right: -30mm; top: -18mm; background: var(--red); border-radius: 50%; }
+    .pass-inner { position: relative; z-index: 2; height: 100%; padding: 8mm; }
+    .pass-header { display: flex; justify-content: space-between; align-items: center; gap: 4mm; height: 25mm; }
+    .pass-leader-wrap { width: 18mm; height: 18mm; border-radius: 50%; overflow: hidden; border: 2px solid rgba(255, 255, 255, 0.8); background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+    .pass-leader { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pass-header-right { flex: 1; text-align: right; color: #fff; }
+    .pass-wing { font-size: 17px; font-weight: 900; }
+    .pass-meeting { font-size: 8px; font-weight: 700; margin-top: 2px; }
+    .pass-logo { width: 18mm; height: 18mm; object-fit: contain; border-radius: 50%; background: #fff; padding: 1mm; }
+    .pass-title { text-align: center; color: var(--blue-deep); font-size: 20px; font-weight: 900; margin-top: 7mm; letter-spacing: .7px; }
+    .pass-line { width: 35mm; height: 1mm; background: var(--red); margin: 2mm auto 4mm; border-radius: 10px; }
+    .pass-details { margin-top: 5mm; border-top: 1px solid #ddd; padding-top: 4mm; }
+    .pass-row { display: flex; margin-bottom: 3mm; font-size: 9.5px; }
+    .pass-label { width: 31mm; min-width: 31mm; color: var(--blue-deep); font-weight: 900; }
+    .pass-value { flex: 1; font-weight: 700; color: #111; word-break: break-word; }
+    .pass-qr { width: 32mm; height: 32mm; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
+    .pass-qr img,.pass-qr canvas { width: 32mm !important; height: 32mm !important; }
+    .pass-scan-text { text-align: center; font-size: 7px; font-weight: 900; color: #555; margin-top: 1mm; }
+    .pass-footer { position: absolute; bottom: 5mm; left: 8mm; right: 8mm; border-top: 1px solid #ddd; padding-top: 2mm; display: flex; justify-content: space-between; }
+    .pass-footer-left, .pass-footer-right { font-size: 7px; font-weight: 900; }
+    .pass-footer-left { color: var(--blue); }
+    .pass-footer-right { color: var(--red); }
+    .download-box { margin-top: 10px; width: 100%; min-height: 52px; display: flex; align-items: center; justify-content: center; background: #eaf2ff; color: var(--blue); border: 1px dashed #b9c9eb; border-radius: 12px; font-size: 16px; font-weight: 800; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <div class="header-top">
+        <img src="images/vck-it-wing-logo.jpeg" alt="VCK IT Wing" class="wing-logo" />
+      </div>
+      <div class="header-content">
+        <img src="images/thol-thirumavalavan.jpg" alt="Leader" class="leader-image" />
+        <div class="organization">VCK IT WING</div>
+        <h1 class="header-title">Get Meeting Pass</h1>
+        <p class="header-tagline">Enter your registered Mobile or WhatsApp number.</p>
+        <div class="brand-line"></div>
+      </div>
+    </header>
+
+    <div class="page-body">
+      <div class="topbar">
+        <a href="index.html" class="back-link">← Back</a>
+      </div>
+
+      <div class="card">
+
+      <div class="field">
+        <label for="getPassNumber">Mobile / WhatsApp Number <span class="required">*</span></label>
+        <input type="tel" id="getPassNumber" placeholder="10-digit mobile number" inputmode="numeric" maxlength="10" />
+      </div>
+
+      <button type="button" id="checkPassButton" class="submit-button">Check the Pass</button>
+      <div id="getPassMessage" class="message"></div>
+
+      <div id="generatedPassArea" class="pass-area">
+        <div class="pass-preview">
+          <div id="meetingPass" class="meeting-pass">
+            <div class="pass-blue-shape"></div>
+            <div class="pass-red-shape"></div>
+            <div class="pass-inner">
+              <div class="pass-header">
+                <div class="pass-leader-wrap"><img src="images/thol-thirumavalavan.jpg" alt="Leader Portrait" class="pass-leader" /></div>
+                <div class="pass-header-right">
+                  <div class="pass-wing">VCK IT WING</div>
+                  <div class="pass-meeting">EVENT PASS</div>
+                </div>
+                <img src="images/vck-it-wing-logo.jpeg" alt="VCK IT Wing Logo" class="pass-logo" />
+              </div>
+              <div class="pass-title">EVENT PASS</div>
+              <div class="pass-line"></div>
+              <div class="pass-details">
+                <div class="pass-row"><div class="pass-label">Name</div><div class="pass-value" id="passName">-</div></div>
+                <div class="pass-row"><div class="pass-label">Phone</div><div class="pass-value" id="passPhone">-</div></div>
+                <div class="pass-row"><div class="pass-label">District</div><div class="pass-value" id="passDistrict">-</div></div>
+                <div class="pass-row"><div class="pass-label">Constituency</div><div class="pass-value" id="passConstituency">-</div></div>
+                <div class="pass-row"><div class="pass-label">Pass ID</div><div class="pass-value" id="passId">-</div></div>
+              </div>
+              <div id="passQRCode" class="pass-qr"></div>
+              <div class="pass-scan-text">SCAN TO VERIFY</div>
+              <div class="pass-footer"><div class="pass-footer-left">VCK IT WING</div><div class="pass-footer-right">MEETING PASS</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="download-box">Please take a screenshot of this pass</div>
+      </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <strong>VCK IT WING</strong>
+      Technology for public service
+    </footer>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'vck_it_wing_registrations';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmzvSl5brgL617kEq9g7H29v8pZFkgQ9uZ-tAYtWEcexjm_hnAB9JxZ6d_MBCLaMTF/exec';
+    const getPassNumber = document.getElementById('getPassNumber');
+    const checkPassButton = document.getElementById('checkPassButton');
+    const getPassMessage = document.getElementById('getPassMessage');
+    const generatedPassArea = document.getElementById('generatedPassArea');
+
+    function sanitize10Digit(value) {
+      return String(value || '').replace(/\D/g, '').slice(0, 10);
+    }
+
+    function getRegistrations() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function findLocalPassRecordByNumber(number) {
+      const digits = sanitize10Digit(number);
+      if (!digits || !/^[0-9]{10}$/.test(digits)) return null;
+      return getRegistrations().find(function (record) {
+        return (sanitize10Digit(record.mobile) === digits) || (sanitize10Digit(record.whatsapp) === digits);
+      }) || null;
+    }
+
+    async function fetchRemotePassRecord(number) {
+      try {
+        const response = await fetch(SCRIPT_URL + '?action=checkpass&number=' + encodeURIComponent(number), {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        if (!response.ok) return null;
+
+        const result = await response.json();
+        if (result && result.success && result.data) {
+          return {
+            ...result.data,
+            permissionStatus: result.data.permissionStatus || 'approved'
+          };
+        }
+
+        return null;
+      } catch (error) {
+        console.warn('Remote pass lookup failed; using local fallback.', error);
+        return null;
+      }
+    }
+
+    async function resolvePassRecord(number) {
+      const localPass = findLocalPassRecordByNumber(number);
+      if (localPass && normalizeStatus(localPass.permissionStatus) === 'approved') {
+        return localPass;
+      }
+
+      const remotePass = await fetchRemotePassRecord(number);
+      if (remotePass && normalizeStatus(remotePass.permissionStatus) === 'approved') {
+        return remotePass;
+      }
+
+      return localPass || remotePass || null;
+    }
+
+    function showMessage(message, type) {
+      getPassMessage.textContent = message;
+      getPassMessage.className = 'message ' + type;
+    }
+
+    function normalizeStatus(value) {
+      return String(value || '').trim().toLowerCase();
+    }
+
+    function getRecordValue(record, keys) {
+      for (const key of keys) {
+        const value = record && (record[key] !== undefined ? record[key] : record[String(key)]);
+        if (value !== undefined && value !== null && String(value).trim() !== '') {
+          return String(value).trim();
+        }
+      }
+      return '';
+    }
+
+    function resolveDisplayName(record) {
+      return getRecordValue(record, ['fullName', 'full_name', 'Full_Name', 'name', 'Name', 'Full Name', 'Applicant Name', 'Volunteer Name']) || getRecordValue(record, ['Full Name']) || '-';
+    }
+
+    function generateMeetingPass(record) {
+      const fullName = resolveDisplayName(record);
+      const phone = getRecordValue(record, ['mobile', 'Mobile', 'phone', 'Phone', 'whatsapp', 'WhatsApp', 'WhatsApp Number']) || '-';
+      const district = getRecordValue(record, ['district', 'District']) || '-';
+      const constituency = getRecordValue(record, ['constituency', 'Constituency', 'Constituency Name']) || '-';
+      const passId = getRecordValue(record, ['passId', 'PassID', 'Pass ID']) || '-';
+
+      document.getElementById('passName').textContent = fullName;
+      document.getElementById('passPhone').textContent = phone;
+      document.getElementById('passDistrict').textContent = district;
+      document.getElementById('passConstituency').textContent = constituency;
+      document.getElementById('passId').textContent = passId;
+
+      const qrContainer = document.getElementById('passQRCode');
+      qrContainer.innerHTML = '';
+      if (passId !== '-') {
+        new QRCode(qrContainer, {
+          text: String(passId),
+          width: 128,
+          height: 128,
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      }
+    }
+
+    getPassNumber.addEventListener('input', function () {
+      this.value = sanitize10Digit(this.value);
+    });
+
+    async function checkMeetingPass() {
+      const number = sanitize10Digit(getPassNumber.value);
+      if (!/^[0-9]{10}$/.test(number)) {
+        showMessage('Please enter a valid 10-digit Mobile or WhatsApp number.', 'error');
+        return;
+      }
+
+      checkPassButton.disabled = true;
+      checkPassButton.textContent = 'Checking...';
+      generatedPassArea.classList.remove('visible');
+      showMessage('Checking your registration...', 'info');
+
+      const passRecord = await resolvePassRecord(number);
+      if (passRecord && normalizeStatus(passRecord.permissionStatus) === 'approved') {
+        generateMeetingPass(passRecord);
+        generatedPassArea.classList.add('visible');
+        showMessage('Your meeting pass is approved.', 'success');
+        checkPassButton.disabled = false;
+        checkPassButton.textContent = 'Check the Pass';
+        return;
+      }
+
+      showMessage('Unable to find your meeting pass.', 'error');
+      checkPassButton.disabled = false;
+      checkPassButton.textContent = 'Check the Pass';
+    }
+
+    checkPassButton.addEventListener('click', checkMeetingPass);
+    getPassNumber.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        checkMeetingPass();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scan The Pass | VCK IT Wing</title>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <style>
+    :root {
+      --blue: #0754b8;
+      --blue-dark: #06356f;
+      --blue-deep: #032c60;
+      --blue-light: #eaf4ff;
+      --red: #d91f2d;
+      --white: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d9e1ea;
+      --success: #15803d;
+      --error: #dc2626;
+      --shadow: 0 8px 30px rgba(3, 44, 96, .10);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f5f8fc; color: var(--text); line-height: 1.5; }
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .site-header {
+      background: linear-gradient(135deg, var(--blue-deep), var(--blue));
+      color: var(--white);
+      padding: 18px 16px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .site-header::after {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+      right: -80px;
+      bottom: -90px;
+    }
+    .site-header .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      min-height: 48px;
+      position: relative;
+      z-index: 2;
+    }
+    .site-header .wing-logo {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: var(--white);
+      padding: 4px;
+    }
+    .site-header .header-content {
+      text-align: center;
+      max-width: 600px;
+      margin: 12px auto 0;
+      position: relative;
+      z-index: 2;
+    }
+    .site-header .leader-image {
+      width: 105px;
+      height: 105px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid rgba(255,255,255,.95);
+      margin-bottom: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,.20);
+    }
+    .site-header .organization {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      opacity: .9;
+    }
+    .site-header .header-title {
+      font-size: 28px;
+      font-weight: 900;
+      margin-top: 4px;
+      letter-spacing: -0.5px;
+    }
+    .site-header .header-tagline {
+      margin-top: 5px;
+      font-size: 14px;
+      opacity: .9;
+    }
+    .site-header .brand-line {
+      width: 52px;
+      height: 4px;
+      background: var(--red);
+      border-radius: 10px;
+      margin: 14px auto 0;
+    }
+    .page-body { flex: 1; padding: 24px 14px 50px; }
+    .topbar { max-width: 900px; margin: 0 auto 18px; }
+    .back-link { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 9px 16px; border-radius: 10px; background: var(--white); border: 1px solid var(--border); color: var(--blue-dark); text-decoration: none; font-size: 14px; font-weight: 700; }
+    .card { max-width: 760px; margin: 0 auto; background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; }
+    .site-footer {
+      background: #032c60;
+      color: var(--white);
+      text-align: center;
+      padding: 18px 16px 20px;
+      font-size: 13px;
+      letter-spacing: 0.4px;
+    }
+    .site-footer strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .title { text-align: center; color: var(--blue-deep); font-size: 24px; font-weight: 900; margin-bottom: 8px; }
+    .subtitle { text-align: center; color: var(--muted); font-size: 14px; margin-bottom: 18px; }
+    .field { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 7px; font-size: 14px; font-weight: 700; color: var(--text); }
+    .required { color: var(--red); }
+    input {
+      width: 100%; border: 1px solid var(--border); border-radius: 11px; padding: 13px 12px; font-size: 15px; font-family: inherit; outline: none; background: var(--white); color: var(--text); min-height: 48px;
+    }
+    input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(7,84,184,.10); }
+    .submit-button {
+      width: 100%; min-height: 52px; border: none; border-radius: 12px; background: var(--blue); color: var(--white); font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 8px; transition: transform .15s, opacity .2s, background .2s;
+    }
+    .submit-button:hover { background: var(--blue-dark); }
+    .submit-button:disabled { opacity: .65; cursor: not-allowed; }
+    .secondary-button { width: 100%; min-height: 52px; border: 1px solid var(--blue); border-radius: 12px; background: var(--white); color: var(--blue-dark); font-size: 16px; font-weight: 800; cursor: pointer; }
+    .message { display: none; margin-top: 14px; padding: 12px; border-radius: 10px; text-align: center; font-size: 14px; font-weight: 700; }
+    .message.success { display: block; color: var(--success); background: #ecfdf3; border: 1px solid #bbf7d0; }
+    .message.error { display: block; color: var(--error); background: #fef2f2; border: 1px solid #fecaca; }
+    .message.info { display: block; color: var(--blue-dark); background: var(--blue-light); border: 1px solid #cfe1f7; }
+    .scanner-wrap { position: relative; margin-top: 20px; border-radius: 16px; overflow: hidden; border: 2px solid #dfe7f3; background: #0f172a; }
+    .scanner-wrap video, .scanner-wrap canvas { display: block; width: 100%; max-height: 350px; object-fit: cover; background: #0f172a; }
+    .scanner-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; }
+    .manual-box { margin-top: 18px; padding: 16px; border: 1px solid #dfe7f3; border-radius: 14px; background: #f8fbff; }
+    .manual-row { display: flex; gap: 10px; margin-top: 10px; }
+    .manual-row input { flex: 1; min-height: 46px; border: 1px solid #cfd9ea; border-radius: 10px; padding: 0 14px; font-size: 15px; font-weight: 600; }
+    .manual-row button { min-width: 140px; min-height: 46px; border: none; border-radius: 10px; background: var(--blue); color: #fff; font-size: 14px; font-weight: 800; cursor: pointer; transition: transform .15s ease, opacity .2s ease, box-shadow .2s ease; }
+    .manual-row button:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(7,84,184,.18); }
+    .manual-row button:active { transform: translateY(0); opacity: .92; }
+    .manual-row button.loading { opacity: .7; cursor: wait; pointer-events: none; }
+    .lookup-card { margin-top: 18px; padding: 16px; border: 1px solid #dfe7f3; border-radius: 14px; background: #f6fbff; display: none; }
+    .lookup-card.visible { display: block; }
+    .lookup-grid { display: grid; gap: 8px; margin-top: 12px; }
+    .lookup-row { display: flex; justify-content: space-between; gap: 12px; padding: 8px 10px; border-radius: 8px; background: #fff; border: 1px solid #ebf0f7; }
+    .lookup-label { color: #44639c; font-size: 13px; font-weight: 700; }
+    .lookup-value { color: #111827; font-size: 13px; font-weight: 700; text-align: right; word-break: break-word; }
+    .admin-actions { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+    .admin-actions .submit-button, .admin-actions .secondary-button { flex: 1 1 180px; }
+    @media (min-width: 600px) { .card { padding: 28px; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <div class="header-top">
+        <img src="images/vck-it-wing-logo.jpeg" alt="VCK IT Wing" class="wing-logo" />
+      </div>
+      <div class="header-content">
+        <img src="images/thol-thirumavalavan.jpg" alt="Leader" class="leader-image" />
+        <div class="organization">VCK IT WING</div>
+        <h1 class="header-title">Scan The Pass</h1>
+        <p class="header-tagline">Authenticate to scan attendance and mark the event pass as attended.</p>
+        <div class="brand-line"></div>
+      </div>
+    </header>
+
+    <div class="page-body">
+      <div class="topbar">
+        <a href="index.html" class="back-link">← Back</a>
+      </div>
+
+      <div id="loginCard" class="card">
+      <div class="title">Admin Login</div>
+      <div class="subtitle">Authenticate to scan attendance and mark the event pass as attended.</div>
+
+      <div class="field">
+        <label for="adminUsername">User Name <span class="required">*</span></label>
+        <input type="text" id="adminUsername" placeholder="Enter user name" />
+      </div>
+
+      <div class="field">
+        <label for="adminPassword">Password <span class="required">*</span></label>
+        <input type="password" id="adminPassword" placeholder="Enter password" />
+      </div>
+
+      <div class="admin-actions">
+        <button type="button" id="adminLoginButton" class="submit-button">Authenticate</button>
+      </div>
+      <div id="adminAuthMessage" class="message"></div>
+    </div>
+
+    <div id="scannerSection" class="card" style="display:none; margin-top:20px;">
+      <div class="title">Scan Pass QR</div>
+      <div class="subtitle">Camera access is required to read the pass ID.</div>
+
+      <div class="scanner-wrap">
+        <video id="scannerVideo" autoplay playsinline></video>
+        <canvas id="scannerCanvas" width="320" height="240"></canvas>
+      </div>
+
+      <div id="scannerStatus" class="message info">Camera is starting...</div>
+
+      <div class="manual-box">
+        <div class="subtitle" style="margin-bottom:0;">Or enter the Pass ID manually</div>
+        <div class="manual-row">
+          <input type="text" id="manualPassIdInput" placeholder="Enter Pass ID" maxlength="50" />
+          <button type="button" id="manualPassIdButton">View Pass</button>
+        </div>
+      </div>
+
+      <div id="adminPassLookupCard" class="lookup-card">
+        <div class="subtitle" style="margin-bottom:0;">Pass Details</div>
+        <div class="lookup-grid">
+          <div class="lookup-row"><span class="lookup-label">Name</span><span class="lookup-value" id="lookupName">-</span></div>
+          <div class="lookup-row"><span class="lookup-label">Phone</span><span class="lookup-value" id="lookupPhone">-</span></div>
+          <div class="lookup-row"><span class="lookup-label">District</span><span class="lookup-value" id="lookupDistrict">-</span></div>
+          <div class="lookup-row"><span class="lookup-label">Constituency</span><span class="lookup-value" id="lookupConstituency">-</span></div>
+          <div class="lookup-row"><span class="lookup-label">Pass ID</span><span class="lookup-value" id="lookupPassId">-</span></div>
+        </div>
+        <div class="admin-actions" style="margin-top:16px;">
+          <button type="button" id="confirmAttendanceButton" class="submit-button">Mark Attendance</button>
+        </div>
+      </div>
+
+      <div class="admin-actions">
+        <button type="button" id="startScannerButton" class="submit-button">Start Scanner</button>
+        <button type="button" id="adminLogoutButton" class="secondary-button">Log Out</button>
+      </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <strong>VCK IT WING</strong>
+      Technology for public service
+    </footer>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'vck_it_wing_registrations';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpD2KVUTFXhTIhdAGHL2LFvgi3_mLlaT3WxeetSP1AOy7OJAuFkkPSyd1gbc1tLZgK/exec';
+    const loginCard = document.getElementById('loginCard');
+    const adminUsername = document.getElementById('adminUsername');
+    const adminPassword = document.getElementById('adminPassword');
+    const adminAuthMessage = document.getElementById('adminAuthMessage');
+    const scannerSection = document.getElementById('scannerSection');
+    const scannerStatus = document.getElementById('scannerStatus');
+    const manualPassIdInput = document.getElementById('manualPassIdInput');
+    const adminPassLookupCard = document.getElementById('adminPassLookupCard');
+    const lookupName = document.getElementById('lookupName');
+    const lookupPhone = document.getElementById('lookupPhone');
+    const lookupDistrict = document.getElementById('lookupDistrict');
+    const lookupConstituency = document.getElementById('lookupConstituency');
+    const lookupPassId = document.getElementById('lookupPassId');
+    const scannerVideo = document.getElementById('scannerVideo');
+    const scannerCanvas = document.getElementById('scannerCanvas');
+    const scannerContext = scannerCanvas.getContext('2d');
+    let scannerStream = null;
+    let scannerLoopId = null;
+    let adminAuthenticated = false;
+
+    function getRegistrations() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function setAdminMessage(message, type) {
+      adminAuthMessage.textContent = message;
+      adminAuthMessage.className = 'message ' + type;
+    }
+
+    function setScannerStatus(message, type) {
+      scannerStatus.textContent = message;
+      scannerStatus.className = 'message ' + type;
+    }
+
+    function setLoadingState(button, isLoading, label) {
+      if (!button) return;
+      if (isLoading) {
+        button.dataset.originalText = button.textContent;
+        button.textContent = label;
+        button.disabled = true;
+        button.classList.add('loading');
+      } else {
+        button.textContent = button.dataset.originalText || label;
+        button.disabled = false;
+        button.classList.remove('loading');
+      }
+    }
+
+    function clearLookup() {
+      adminPassLookupCard.classList.remove('visible');
+      lookupName.textContent = '-';
+      lookupPhone.textContent = '-';
+      lookupDistrict.textContent = '-';
+      lookupConstituency.textContent = '-';
+      lookupPassId.textContent = '-';
+    }
+
+    function normalizePassId(value) {
+      return String(value || '').trim().replace(/\s+/g, '').toLowerCase();
+    }
+
+    function findLocalPassById(passId) {
+      const recordId = normalizePassId(passId);
+      if (!recordId) return null;
+      return getRegistrations().find(function (record) {
+        return normalizePassId(record.passId || record.PassID || record['Pass ID']) === recordId;
+      }) || null;
+    }
+
+    async function findRemotePassById(passId) {
+      const recordId = String(passId || '').trim();
+      if (!recordId) return null;
+      try {
+        const response = await fetch(SCRIPT_URL + '?action=getpassbyid&passId=' + encodeURIComponent(recordId), {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!response.ok) return null;
+        const result = await response.json();
+        if (result && result.success && result.data) {
+          return result.data;
+        }
+        return null;
+      } catch (error) {
+        console.warn('Remote pass lookup failed.', error);
+        return null;
+      }
+    }
+
+    async function findByPassId(passId) {
+      const localRecord = findLocalPassById(passId);
+      if (localRecord) return localRecord;
+      return await findRemotePassById(passId);
+    }
+
+    function showPassLookup(record) {
+      const fullName = record.fullName || record['Full Name'] || record.name || '-';
+      const mobile = record.mobile || record.Mobile || record.phone || '-';
+      const district = record.district || record.District || '-';
+      const constituency = record.constituency || record.Constituency || '-';
+      const passId = record.passId || record.PassID || record['Pass ID'] || '-';
+
+      lookupName.textContent = fullName;
+      lookupPhone.textContent = mobile;
+      lookupDistrict.textContent = district;
+      lookupConstituency.textContent = constituency;
+      lookupPassId.textContent = passId;
+      adminPassLookupCard.classList.add('visible');
+    }
+
+    function stopScanner() {
+      if (scannerLoopId) {
+        cancelAnimationFrame(scannerLoopId);
+        scannerLoopId = null;
+      }
+      if (scannerStream) {
+        scannerStream.getTracks().forEach(function(track) { track.stop(); });
+        scannerStream = null;
+      }
+      if (scannerVideo) {
+        scannerVideo.srcObject = null;
+      }
+    }
+
+    function handleAdminLogin() {
+      const username = adminUsername.value.trim();
+      const password = adminPassword.value;
+      if (!username || !password) {
+        setAdminMessage('Please enter both user name and password.', 'error');
+        return;
+      }
+
+      if (username === 'VCKITWingSalem' && password === 'HariharanMS1!') {
+        adminAuthenticated = true;
+        loginCard.style.display = 'none';
+        scannerSection.style.display = 'block';
+        setAdminMessage('', 'info');
+        setScannerStatus('Camera is starting...', 'info');
+        startAdminScanner();
+      } else {
+        setAdminMessage('Invalid user name or password.', 'error');
+      }
+    }
+
+    document.getElementById('adminLoginButton').addEventListener('click', handleAdminLogin);
+
+    async function startAdminScanner() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setScannerStatus('Camera access is not supported in this browser.', 'error');
+        return;
+      }
+
+      try {
+        scannerStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+        scannerVideo.srcObject = scannerStream;
+        await scannerVideo.play();
+
+        function scanFrame() {
+          if (scannerVideo.readyState >= 2) {
+            scannerCanvas.width = scannerVideo.videoWidth || 320;
+            scannerCanvas.height = scannerVideo.videoHeight || 240;
+            scannerContext.drawImage(scannerVideo, 0, 0, scannerCanvas.width, scannerCanvas.height);
+            const imageData = scannerContext.getImageData(0, 0, scannerCanvas.width, scannerCanvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+            if (code) {
+              const scannedValue = String(code.data || '').trim();
+              stopScanner();
+              if (scannedValue) {
+                setScannerStatus('Pass detected. Loading user details...', 'info');
+                (async function () {
+                  const record = await findByPassId(scannedValue);
+                  if (record) {
+                    showPassLookup(record);
+                    setScannerStatus('Pass found. Please confirm attendance.', 'success');
+                    manualPassIdInput.value = record.passId || scannedValue;
+                  } else {
+                    clearLookup();
+                    setScannerStatus('Pass ID not found. Please enter the Pass ID manually.', 'error');
+                    manualPassIdInput.value = scannedValue;
+                  }
+                })();
+              }
+              return;
+            }
+          }
+          scannerLoopId = requestAnimationFrame(scanFrame);
+        }
+
+        scannerLoopId = requestAnimationFrame(scanFrame);
+      } catch (error) {
+        console.error('Scanner error:', error);
+        setScannerStatus('Unable to access the camera. Please allow camera access and try again.', 'error');
+      }
+    }
+
+    document.getElementById('startScannerButton').addEventListener('click', function () {
+      if (!adminAuthenticated) {
+        scannerSection.style.display = 'none';
+        setAdminMessage('Please log in first.', 'error');
+        return;
+      }
+      startAdminScanner();
+    });
+
+    document.getElementById('manualPassIdButton').addEventListener('click', async function () {
+      const passId = manualPassIdInput.value.trim();
+      const button = document.getElementById('manualPassIdButton');
+      if (!passId) {
+        setScannerStatus('Please enter the Pass ID to mark attendance.', 'error');
+        return;
+      }
+      setLoadingState(button, true, 'Loading...');
+      try {
+        const record = await findByPassId(passId);
+        if (record) {
+          showPassLookup(record);
+          setScannerStatus('Pass details loaded. Please confirm before marking attendance.', 'success');
+        } else {
+          clearLookup();
+          setScannerStatus('Pass not found. Please double-check the Pass ID.', 'error');
+        }
+      } finally {
+        setLoadingState(button, false, 'View Pass');
+      }
+    });
+
+    document.getElementById('confirmAttendanceButton').addEventListener('click', async function () {
+      const passId = lookupPassId.textContent.trim();
+      const button = document.getElementById('confirmAttendanceButton');
+      if (!passId || passId === '-') {
+        setScannerStatus('No valid Pass ID found. Please scan or enter a Pass ID again.', 'error');
+        return;
+      }
+
+      setLoadingState(button, true, 'Marking...');
+
+      const records = getRegistrations();
+      const index = records.findIndex(function (record) {
+        return normalizePassId(record.passId || record.PassID || record['Pass ID']) === normalizePassId(passId);
+      });
+
+      if (index >= 0) {
+        records[index].Attendance = true;
+        records[index].attendance = true;
+        records[index].attendanceStatus = true;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+      }
+
+      try {
+        const response = await fetch(SCRIPT_URL + '?action=markattendance&passId=' + encodeURIComponent(passId), {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        const result = await response.json().catch(function () { return null; });
+        if (response.ok && result && result.success) {
+          setScannerStatus('Attendance marked successfully.', 'success');
+          manualPassIdInput.value = '';
+          clearLookup();
+          return;
+        }
+      } catch (error) {
+        console.warn('Remote attendance update failed.', error);
+      }
+
+      if (index >= 0) {
+        setScannerStatus('Attendance marked successfully in local records.', 'success');
+        manualPassIdInput.value = '';
+        clearLookup();
+      } else {
+        setScannerStatus('This pass ID was not found in local records.', 'error');
+      }
+    });
+
+    document.getElementById('adminLogoutButton').addEventListener('click', function () {
+      adminAuthenticated = false;
+      stopScanner();
+      scannerSection.style.display = 'none';
+      loginCard.style.display = 'block';
+      adminUsername.value = '';
+      adminPassword.value = '';
+      setAdminMessage('', 'info');
+      setScannerStatus('Camera is starting...', 'info');
+      clearLookup();
+    });
+  </script>
+</body>
+</html>

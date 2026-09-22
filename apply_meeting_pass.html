@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apply Meeting Pass | VCK IT Wing</title>
+  <style>
+    :root {
+      --blue: #0754b8;
+      --blue-dark: #06356f;
+      --blue-deep: #032c60;
+      --blue-light: #eaf4ff;
+      --red: #d91f2d;
+      --white: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d9e1ea;
+      --success: #15803d;
+      --error: #dc2626;
+      --shadow: 0 8px 30px rgba(3, 44, 96, .10);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f8fc;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .site-header {
+      background: linear-gradient(135deg, var(--blue-deep), var(--blue));
+      color: var(--white);
+      padding: 18px 16px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .site-header::after {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+      right: -80px;
+      bottom: -90px;
+    }
+    .site-header .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      min-height: 48px;
+      position: relative;
+      z-index: 2;
+    }
+    .site-header .wing-logo {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: var(--white);
+      padding: 4px;
+    }
+    .site-header .header-content {
+      text-align: center;
+      max-width: 600px;
+      margin: 12px auto 0;
+      position: relative;
+      z-index: 2;
+    }
+    .site-header .leader-image {
+      width: 105px;
+      height: 105px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid rgba(255,255,255,.95);
+      margin-bottom: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,.20);
+    }
+    .site-header .organization {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      opacity: .9;
+    }
+    .site-header .header-title {
+      font-size: 28px;
+      font-weight: 900;
+      margin-top: 4px;
+      letter-spacing: -0.5px;
+    }
+    .site-header .header-tagline {
+      margin-top: 5px;
+      font-size: 14px;
+      opacity: .9;
+    }
+    .site-header .brand-line {
+      width: 52px;
+      height: 4px;
+      background: var(--red);
+      border-radius: 10px;
+      margin: 14px auto 0;
+    }
+    .page-body { flex: 1; padding: 24px 14px 48px; }
+    .topbar {
+      max-width: 900px; margin: 0 auto 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+    }
+    .back-link {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 42px; padding: 9px 16px; border-radius: 10px;
+      background: var(--white); border: 1px solid var(--border); color: var(--blue-dark);
+      text-decoration: none; font-size: 14px; font-weight: 700;
+    }
+    .site-footer {
+      background: #032c60;
+      color: var(--white);
+      text-align: center;
+      padding: 18px 16px 20px;
+      font-size: 13px;
+      letter-spacing: 0.4px;
+    }
+    .site-footer strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .form-wrap {
+      max-width: 760px; margin: 0 auto; background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px;
+    }
+    .section { padding-bottom: 22px; margin-bottom: 22px; border-bottom: 1px solid #edf0f4; }
+    .section:last-of-type { border-bottom: none; margin-bottom: 0; }
+    .section-title {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 16px; color: var(--blue-deep); font-size: 17px; font-weight: 800;
+    }
+    .section-number {
+      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--blue); color: var(--white);
+      font-size: 14px; font-weight: 800;
+    }
+    .field { margin-bottom: 15px; }
+    label {
+      display: block; margin-bottom: 7px; font-size: 14px; font-weight: 700; color: var(--text);
+    }
+    .required { color: var(--red); }
+    input, select, textarea {
+      width: 100%; border: 1px solid var(--border); border-radius: 11px; padding: 13px 12px; font-size: 15px; font-family: inherit; outline: none;
+      transition: border-color .2s, box-shadow .2s; background: var(--white); color: var(--text);
+    }
+    input, select { min-height: 48px; }
+    textarea { min-height: 105px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(7,84,184,.10); }
+    .two-column { display: grid; gap: 14px; }
+    .skills-help { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+    .skills-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .skill-button {
+      min-height: 44px; border: 1px solid var(--border); border-radius: 10px; background: var(--white); color: var(--text); padding: 9px 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s ease;
+    }
+    .skill-button:hover { border-color: var(--blue); }
+    .skill-button.selected {
+      background: var(--blue-light); color: var(--blue-dark); border-color: var(--blue); box-shadow: inset 0 0 0 1px var(--blue);
+    }
+    .submit-button {
+      width: 100%; min-height: 52px; border: none; border-radius: 12px; background: var(--blue); color: var(--white); font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 8px; transition: transform .15s, opacity .2s, background .2s;
+    }
+    .submit-button:hover { background: var(--blue-dark); }
+    .submit-button:disabled { opacity: .65; cursor: not-allowed; }
+    .form-message {
+      display: none; margin-top: 14px; padding: 12px; border-radius: 10px; text-align: center; font-size: 14px; font-weight: 700;
+    }
+    .form-message.success { display: block; color: var(--success); background: #ecfdf3; border: 1px solid #bbf7d0; }
+    .form-message.error { display: block; color: var(--error); background: #fef2f2; border: 1px solid #fecaca; }
+    .success-state { display: none; padding: 24px 12px 10px; text-align: center; }
+    .success-state.visible { display: block; }
+    .success-icon {
+      width: 110px; height: 110px; border-radius: 50%; background: linear-gradient(180deg, #1bbf60, #0f9c4f); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; box-shadow: 0 18px 40px rgba(21,128,61,.22);
+    }
+    .success-icon svg { width: 58px; height: 58px; stroke: var(--white); stroke-width: 6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .success-title { color: var(--success); font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+    .success-text { color: var(--text); font-size: 15px; margin-bottom: 20px; }
+    .another-submit-button {
+      min-height: 52px; width: 100%; border: none; border-radius: 12px; background: var(--success); color: var(--white); font-size: 16px; font-weight: 800; cursor: pointer; transition: transform .15s;
+    }
+    .hidden-input { display: none; }
+    @media (min-width: 600px) {
+      .two-column { grid-template-columns: 1fr 1fr; }
+      .skills-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .form-wrap { padding: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <div class="header-top">
+        <img src="images/vck-it-wing-logo.jpeg" alt="VCK IT Wing" class="wing-logo" />
+      </div>
+      <div class="header-content">
+        <img src="images/thol-thirumavalavan.jpg" alt="Leader" class="leader-image" />
+        <div class="organization">VCK IT WING</div>
+        <h1 class="header-title">Apply Meeting Pass</h1>
+        <p class="header-tagline">Apply to join the upcoming meetup and contribute your skills.</p>
+        <div class="brand-line"></div>
+      </div>
+    </header>
+
+    <div class="page-body">
+      <div class="topbar">
+        <a href="index.html" class="back-link">← Back</a>
+      </div>
+
+      <form id="volunteerForm" class="form-wrap" novalidate>
+      <section class="section">
+        <div class="section-title"><span class="section-number">1</span> Personal Information</div>
+        <div class="field">
+          <label for="fullName">Full Name <span class="required">*</span></label>
+          <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required />
+        </div>
+        <div class="two-column">
+          <div class="field">
+            <label for="mobile">Mobile Number <span class="required">*</span></label>
+            <input type="tel" id="mobile" name="mobile" placeholder="10-digit mobile number" inputmode="numeric" maxlength="10" required />
+          </div>
+          <div class="field">
+            <label for="whatsapp">WhatsApp Number</label>
+            <input type="tel" id="whatsapp" name="whatsapp" placeholder="WhatsApp number" inputmode="numeric" maxlength="10" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="Enter your email address" />
+        </div>
+        <div class="two-column">
+          <div class="field">
+            <label for="age">Age <span class="required">*</span></label>
+            <input type="number" id="age" name="age" placeholder="Your age" min="18" max="100" required />
+          </div>
+          <div class="field">
+            <label for="gender">Gender <span class="required">*</span></label>
+            <select id="gender" name="gender" required>
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title"><span class="section-number">2</span> Location Details</div>
+        <div class="field">
+          <label for="district">District <span class="required">*</span></label>
+          <select id="district" name="district" required>
+            <option value="">Select District</option>
+            <option value="Ariyalur">Ariyalur</option>
+            <option value="Chengalpattu">Chengalpattu</option>
+            <option value="Chennai">Chennai</option>
+            <option value="Coimbatore">Coimbatore</option>
+            <option value="Cuddalore">Cuddalore</option>
+            <option value="Dharmapuri">Dharmapuri</option>
+            <option value="Dindigul">Dindigul</option>
+            <option value="Erode">Erode</option>
+            <option value="Kallakurichi">Kallakurichi</option>
+            <option value="Kanchipuram">Kanchipuram</option>
+            <option value="Kanniyakumari">Kanniyakumari</option>
+            <option value="Karur">Karur</option>
+            <option value="Krishnagiri">Krishnagiri</option>
+            <option value="Madurai">Madurai</option>
+            <option value="Mayiladuthurai">Mayiladuthurai</option>
+            <option value="Nagapattinam">Nagapattinam</option>
+            <option value="Namakkal">Namakkal</option>
+            <option value="Nilgiris">Nilgiris</option>
+            <option value="Perambalur">Perambalur</option>
+            <option value="Pudukkottai">Pudukkottai</option>
+            <option value="Ramanathapuram">Ramanathapuram</option>
+            <option value="Ranipet">Ranipet</option>
+            <option value="Salem">Salem</option>
+            <option value="Sivaganga">Sivaganga</option>
+            <option value="Tenkasi">Tenkasi</option>
+            <option value="Thanjavur">Thanjavur</option>
+            <option value="Theni">Theni</option>
+            <option value="Thiruvallur">Thiruvallur</option>
+            <option value="Thiruvarur">Thiruvarur</option>
+            <option value="Thoothukudi">Thoothukudi</option>
+            <option value="Tiruchirappalli">Tiruchirappalli</option>
+            <option value="Tirunelveli">Tirunelveli</option>
+            <option value="Tirupattur">Tirupattur</option>
+            <option value="Tiruppur">Tiruppur</option>
+            <option value="Tiruvannamalai">Tiruvannamalai</option>
+            <option value="Vellore">Vellore</option>
+            <option value="Viluppuram">Viluppuram</option>
+            <option value="Virudhunagar">Virudhunagar</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="constituency">Assembly Constituency <span class="required">*</span></label>
+          <input type="text" id="constituency" name="constituency" placeholder="Enter your constituency" required />
+        </div>
+        <div class="two-column">
+          <div class="field">
+            <label for="townCity">Town / City <span class="required">*</span></label>
+            <input type="text" id="townCity" name="townCity" placeholder="Town / City" required />
+          </div>
+          <div class="field">
+            <label for="areaWard">Area / Ward <span class="required">*</span></label>
+            <input type="text" id="areaWard" name="areaWard" placeholder="Enter your area / ward" inputmode="numeric" maxlength="6" required />
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title"><span class="section-number">3</span> Skills & Experience</div>
+        <div class="field">
+          <label>Skills <span class="required">*</span></label>
+          <div class="skills-help">Select all skills that apply.</div>
+          <div class="skills-grid">
+            <button type="button" class="skill-button" data-skill="Graphic Design">Graphic Design</button>
+            <button type="button" class="skill-button" data-skill="Video Editing">Video Editing</button>
+            <button type="button" class="skill-button" data-skill="Reels / Shorts">Reels / Shorts</button>
+            <button type="button" class="skill-button" data-skill="Photography">Photography</button>
+            <button type="button" class="skill-button" data-skill="Videography">Videography</button>
+            <button type="button" class="skill-button" data-skill="Social Media Management">Social Media</button>
+            <button type="button" class="skill-button" data-skill="Content Writing">Content Writing</button>
+            <button type="button" class="skill-button" data-skill="Copywriting">Copywriting</button>
+            <button type="button" class="skill-button" data-skill="Web Development">Web Development</button>
+            <button type="button" class="skill-button" data-skill="Software Development">Software Development</button>
+            <button type="button" class="skill-button" data-skill="UI/UX Design">UI/UX Design</button>
+            <button type="button" class="skill-button" data-skill="AI / Automation">AI / Automation</button>
+            <button type="button" class="skill-button" data-skill="Other">Other</button>
+          </div>
+          <input id="skillsInput" class="hidden-input" name="skills" />
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title"><span class="section-number">4</span> Volunteer Preference</div>
+        <div class="field">
+          <label for="preferredActivity">Preferred Activity <span class="required">*</span></label>
+          <select id="preferredActivity" name="preferredActivity" required>
+            <option value="">Select Preferred Activity</option>
+            <option value="Content Creation">Content Creation</option>
+            <option value="Social Media">Social Media</option>
+            <option value="Design">Design</option>
+            <option value="Video / Reels">Video / Reels</option>
+            <option value="Technology">Technology</option>
+            <option value="Photography">Photography</option>
+            <option value="Campaign Support">Campaign Support</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="foodType">Food Type <span class="required">*</span></label>
+          <select id="foodType" name="foodType" required>
+            <option value="">Select Food Type</option>
+            <option value="Veg">Veg</option>
+            <option value="Non-Veg">Non-Veg</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="additionalInfo">Additional Information</label>
+          <textarea id="additionalInfo" name="additionalInfo" placeholder="Anything else you would like to share..."></textarea>
+        </div>
+      </section>
+
+      <button type="submit" id="submitButton" class="submit-button">Submit Registration</button>
+      <div id="formMessage" class="form-message"></div>
+    </form>
+
+    <div id="successState" class="success-state" aria-live="polite">
+      <div class="success-icon" aria-hidden="true">
+        <svg viewBox="0 0 52 52" role="img" aria-label="Success">
+          <path d="M14 27 L23 36 L38 16"></path>
+        </svg>
+      </div>
+      <div class="success-title">Submitted</div>
+      <div class="success-text">Your meetup application has been received successfully.</div>
+      <button type="button" id="anotherSubmissionBtn" class="another-submit-button">Another Submission</button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <strong>VCK IT WING</strong>
+    Technology for public service
+  </footer>
+
+  <script>
+    const STORAGE_KEY = 'vck_it_wing_registrations';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyGObbBh8LlcB8zIWlEF-8V4TiKNg09HrXVgM7AYUa-8ViC2-Y4ibhKrKqoRNDd9Rll/exec';
+    const selectedSkills = new Set();
+    const skillsInput = document.getElementById('skillsInput');
+    const form = document.getElementById('volunteerForm');
+    const submitButton = document.getElementById('submitButton');
+    const formMessage = document.getElementById('formMessage');
+    const successState = document.getElementById('successState');
+    const anotherSubmissionBtn = document.getElementById('anotherSubmissionBtn');
+    const skillButtons = document.querySelectorAll('.skill-button');
+
+    function setSkillsInput() {
+      skillsInput.value = Array.from(selectedSkills).join(', ');
+    }
+
+    skillButtons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        const skill = button.dataset.skill;
+        if (selectedSkills.has(skill)) {
+          selectedSkills.delete(skill);
+          button.classList.remove('selected');
+        } else {
+          selectedSkills.add(skill);
+          button.classList.add('selected');
+        }
+        setSkillsInput();
+      });
+    });
+
+    function sanitize10Digit(value) {
+      return String(value || '').replace(/\D/g, '').slice(0, 10);
+    }
+
+    document.getElementById('mobile').addEventListener('input', function() {
+      this.value = sanitize10Digit(this.value);
+    });
+
+    document.getElementById('whatsapp').addEventListener('input', function() {
+      this.value = sanitize10Digit(this.value);
+    });
+
+    document.getElementById('areaWard').addEventListener('input', function() {
+      this.value = String(this.value || '').replace(/\D/g, '').slice(0, 6);
+    });
+
+    function getStoredRegistrations() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveRegistration(record) {
+      const entries = getStoredRegistrations();
+      entries.push(record);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    }
+
+    function showFormMessage(message, type) {
+      formMessage.textContent = message;
+      formMessage.className = 'form-message ' + type;
+    }
+
+    function showSuccess(result) {
+      form.style.display = 'none';
+      successState.classList.add('visible');
+
+      const successText = successState.querySelector('.success-text');
+      const passId = result && result.data ? result.data.passId : '';
+
+      if (successText) {
+        successText.textContent = passId
+          ? 'Your meetup application has been received successfully. Pass ID: ' + passId
+          : 'Your meetup application has been received successfully.';
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetForm() {
+      form.reset();
+      form.style.display = 'block';
+      successState.classList.remove('visible');
+      formMessage.textContent = '';
+      formMessage.className = 'form-message';
+      selectedSkills.clear();
+      skillButtons.forEach(function(button) {
+        button.classList.remove('selected');
+      });
+      setSkillsInput();
+      submitButton.disabled = false;
+      submitButton.textContent = 'Submit Registration';
+    }
+
+    anotherSubmissionBtn.addEventListener('click', resetForm);
+
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      if (selectedSkills.size === 0) {
+        showFormMessage('Please select at least one skill.', 'error');
+        return;
+      }
+
+      const mobile = sanitize10Digit(document.getElementById('mobile').value);
+      if (!/^[0-9]{10}$/.test(mobile)) {
+        showFormMessage('Please enter a valid 10-digit mobile number.', 'error');
+        return;
+      }
+
+      const whatsapp = sanitize10Digit(document.getElementById('whatsapp').value);
+      if (whatsapp && !/^[0-9]{10}$/.test(whatsapp)) {
+        showFormMessage('Please enter a valid WhatsApp number.', 'error');
+        return;
+      }
+
+      // The server generates Timestamp, PassID, Permission_Status and Attendance.
+      // Do not send or trust those values from the browser.
+      const payload = {
+        action: 'submitregistration',
+        'Full Name': document.getElementById('fullName').value.trim(),
+        Mobile: mobile,
+        WhatsApp: whatsapp,
+        Email: document.getElementById('email').value.trim(),
+        Age: document.getElementById('age').value,
+        Gender: document.getElementById('gender').value,
+        District: document.getElementById('district').value,
+        Constituency: document.getElementById('constituency').value.trim(),
+        'Town/City': document.getElementById('townCity').value.trim(),
+        'Area/Ward': document.getElementById('areaWard').value.trim(),
+        Skills: Array.from(selectedSkills).join(', '),
+        'Food Type': document.getElementById('foodType').value,
+        'Preferred Activity': document.getElementById('preferredActivity').value,
+        'Additional Information': document.getElementById('additionalInfo').value.trim()
+      };
+
+      submitButton.disabled = true;
+      submitButton.textContent = 'Submitting...';
+      showFormMessage('', 'error');
+
+      try {
+        // text/plain avoids a browser CORS preflight that application/json can trigger.
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        const responseText = await response.text();
+        console.log('Submission response status:', response.status);
+        console.log('Submission response body:', responseText);
+
+        let result = null;
+        try {
+          result = JSON.parse(responseText);
+        } catch (error) {
+          result = null;
+        }
+
+        if (!response.ok || !result || result.success !== true) {
+          const message = (result && result.error) || 'The server rejected the registration. Please try again.';
+          throw new Error(message);
+        }
+
+        // Save locally only after Google Sheets confirms the write.
+        saveRegistration(Object.assign({}, payload, {
+          Timestamp: result.data && result.data.timestamp ? result.data.timestamp : '',
+          PassID: result.data && result.data.passId ? result.data.passId : '',
+          Permission_Status: 'pending',
+          Attendance: false
+        }));
+
+        showSuccess(result);
+      } catch (error) {
+        console.error('Submission error:', error);
+        showFormMessage(
+          error && error.message
+            ? error.message
+            : 'Unable to submit the registration. Please try again.',
+          'error'
+        );
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit Registration';
+      }
+    });
+
+    setSkillsInput();
+  </script>
+</body>
+</html>
