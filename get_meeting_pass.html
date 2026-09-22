@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Get Meeting Pass | VCK IT Wing</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root {
       --blue: #0754b8;
@@ -141,34 +143,85 @@
     .message.info { display: block; color: var(--blue-dark); background: var(--blue-light); border: 1px solid #cfe1f7; }
     .pass-area { display: none; margin-top: 20px; }
     .pass-area.visible { display: block; }
-    .pass-preview { width: 100%; display: flex; justify-content: center; overflow-x: auto; padding: 10px 0 20px; }
-    .meeting-pass {
-      width: 105mm; height: 148mm; min-width: 105mm; position: relative; overflow: hidden; background: #ffffff; box-shadow: 0 8px 30px rgba(0,0,0,.18); font-family: Arial, Helvetica, sans-serif;
+    .pass-preview {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+      padding: 7px;
+      background: #edf3fa;
+      border-radius: 10px;
     }
-    .pass-blue-shape { position: absolute; width: 130mm; height: 65mm; left: -25mm; top: -25mm; background: var(--blue); border-radius: 0 0 60% 45%; transform: rotate(-5deg); }
-    .pass-red-shape { position: absolute; width: 70mm; height: 50mm; right: -30mm; top: -18mm; background: var(--red); border-radius: 50%; }
-    .pass-inner { position: relative; z-index: 2; height: 100%; padding: 8mm; }
-    .pass-header { display: flex; justify-content: space-between; align-items: center; gap: 4mm; height: 25mm; }
+    .meeting-pass {
+      width: 90mm; height: 160mm; min-width: 90mm; position: relative; overflow: hidden; border-radius: 3mm; border: 0.6mm solid rgba(3,44,96,.16); background: #ffffff; box-shadow: 0 18px 45px rgba(0,0,0,.28), 0 6px 16px rgba(3,44,96,.16); font-family: Arial, Helvetica, sans-serif;
+    }
+    .pass-blue-shape { position: absolute; width: 130mm; height: 65mm; left: -25mm; top: -25mm; background: #0754b8 !important; border-radius: 0 0 60% 45%; transform: rotate(-5deg); }
+    .pass-red-shape { position: absolute; width: 70mm; height: 50mm; right: -30mm; top: -18mm; background: #d91f2d !important; border-radius: 50%; }
+    .pass-inner { position: relative; z-index: 2; height: 100%; padding: 9mm; }
+    .pass-header { display: flex; justify-content: space-between; align-items: center; gap: 4mm; height: 29mm; }
     .pass-leader-wrap { width: 18mm; height: 18mm; border-radius: 50%; overflow: hidden; border: 2px solid rgba(255, 255, 255, 0.8); background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,.18); }
     .pass-leader { width: 100%; height: 100%; object-fit: cover; display: block; }
     .pass-header-right { flex: 1; text-align: right; color: #fff; }
     .pass-wing { font-size: 17px; font-weight: 900; }
     .pass-meeting { font-size: 8px; font-weight: 700; margin-top: 2px; }
     .pass-logo { width: 18mm; height: 18mm; object-fit: contain; border-radius: 50%; background: #fff; padding: 1mm; }
-    .pass-title { text-align: center; color: var(--blue-deep); font-size: 20px; font-weight: 900; margin-top: 7mm; letter-spacing: .7px; }
+    .pass-title { text-align: center; color: var(--blue-deep); font-size: 20px; font-weight: 900; margin-top: 10mm; letter-spacing: .7px; }
     .pass-line { width: 35mm; height: 1mm; background: var(--red); margin: 2mm auto 4mm; border-radius: 10px; }
-    .pass-details { margin-top: 5mm; border-top: 1px solid #ddd; padding-top: 4mm; }
+    .pass-details { margin-top: 7mm; border-top: 1px solid #ddd; padding-top: 4mm; }
     .pass-row { display: flex; margin-bottom: 3mm; font-size: 9.5px; }
     .pass-label { width: 31mm; min-width: 31mm; color: var(--blue-deep); font-weight: 900; }
     .pass-value { flex: 1; font-weight: 700; color: #111; word-break: break-word; }
     .pass-qr { width: 32mm; height: 32mm; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
     .pass-qr img,.pass-qr canvas { width: 32mm !important; height: 32mm !important; }
     .pass-scan-text { text-align: center; font-size: 7px; font-weight: 900; color: #555; margin-top: 1mm; }
-    .pass-footer { position: absolute; bottom: 5mm; left: 8mm; right: 8mm; border-top: 1px solid #ddd; padding-top: 2mm; display: flex; justify-content: space-between; }
+    .pass-footer { position: absolute; bottom: 6mm; left: 9mm; right: 9mm; border-top: 1px solid #ddd; padding-top: 2mm; display: flex; justify-content: space-between; }
     .pass-footer-left, .pass-footer-right { font-size: 7px; font-weight: 900; }
     .pass-footer-left { color: var(--blue); }
     .pass-footer-right { color: var(--red); }
     .download-box { margin-top: 10px; width: 100%; min-height: 52px; display: flex; align-items: center; justify-content: center; background: #eaf2ff; color: var(--blue); border: 1px dashed #b9c9eb; border-radius: 12px; font-size: 16px; font-weight: 800; }
+
+    .download-actions { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .pdf-button, .print-button {
+      width: 100%; min-height: 52px; border: none; border-radius: 12px;
+      color: #fff; font-size: 16px; font-weight: 800; cursor: pointer;
+    }
+    .pdf-button { background: var(--blue); }
+    .pdf-button:hover { background: var(--blue-dark); }
+    .print-button { background: var(--blue-dark); }
+    .pdf-status { min-height: 20px; text-align: center; font-size: 13px; font-weight: 700; }
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      @page { size: 90mm 160mm; margin: 0; }
+      html, body {
+        width: 90mm !important;
+        min-width: 90mm !important;
+        max-width: 90mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+      }
+      body * { visibility: hidden !important; }
+      #meetingPass, #meetingPass * { visibility: visible !important; }
+      #meetingPass {
+        position: absolute !important;
+        left: 0.8mm !important;
+        top: 0.8mm !important;
+        width: 88.4mm !important;
+        min-width: 88.4mm !important;
+        height: 158.4mm !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        transform: none !important;
+        background: #ffffff !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -230,7 +283,11 @@
             </div>
           </div>
         </div>
-        <div class="download-box">Please take a screenshot of this pass</div>
+        <div class="download-actions">
+      <button type="button" id="downloadPdfButton" class="pdf-button">Download Pass as PDF</button>
+      <button type="button" id="printPdfButton" class="print-button">Print / Save as PDF</button>
+      <div id="pdfStatus" class="pdf-status"></div>
+    </div>
       </div>
       </div>
     </div>
@@ -395,6 +452,99 @@
         checkMeetingPass();
       }
     });
+    const downloadPdfButton = document.getElementById('downloadPdfButton');
+    const printPdfButton = document.getElementById('printPdfButton');
+    const pdfStatus = document.getElementById('pdfStatus');
+
+    function setPdfStatus(message, isError) {
+      pdfStatus.textContent = message || '';
+      pdfStatus.style.color = isError ? '#dc2626' : '#0754b8';
+    }
+
+    function safeFileName(value) {
+      return String(value || 'meeting-pass').replace(/[^a-zA-Z0-9_-]/g, '_');
+    }
+
+    async function downloadPassAsPDF() {
+      const pass = document.getElementById('meetingPass');
+      const passId = document.getElementById('passId').textContent.trim() || 'meeting-pass';
+
+      if (!pass || !generatedPassArea.classList.contains('visible')) {
+        setPdfStatus('Please generate your approved pass first.', true);
+        return;
+      }
+
+      // Direct PDF download, when the CDN libraries are available.
+      if (window.html2canvas && window.jspdf && window.jspdf.jsPDF) {
+        downloadPdfButton.disabled = true;
+        setPdfStatus('Creating your PDF...', false);
+
+        try {
+          // Wait for all images in the pass to be completely loaded.
+          const images = Array.from(pass.querySelectorAll('img'));
+          await Promise.all(images.map(function(img) {
+            if (img.complete) return Promise.resolve();
+            return new Promise(function(resolve) {
+              img.addEventListener('load', resolve, { once: true });
+              img.addEventListener('error', resolve, { once: true });
+            });
+          }));
+
+          // Small delay lets the QR canvas finish rendering.
+          await new Promise(function(resolve) { setTimeout(resolve, 150); });
+
+          const canvas = await html2canvas(pass, {
+            scale: 3,
+            useCORS: true,
+            allowTaint: false,
+            backgroundColor: '#ffffff',
+            foreignObjectRendering: false,
+            logging: false,
+            imageTimeout: 15000,
+            width: pass.offsetWidth,
+            height: pass.offsetHeight
+          });
+
+          const imageData = canvas.toDataURL('image/png', 1.0);
+          const jsPDF = window.jspdf.jsPDF;
+          const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: [90, 160],
+            compress: true
+          });
+
+          pdf.addImage(imageData, 'PNG', 0.8, 0.8, 88.4, 158.4, undefined, 'FAST');
+          pdf.save(safeFileName(passId) + '.pdf');
+
+          setPdfStatus('PDF downloaded successfully.', false);
+          return;
+        } catch (error) {
+          console.error('Direct PDF export failed:', error);
+          setPdfStatus('Direct download failed. Opening the reliable Print / Save as PDF option...', true);
+        } finally {
+          downloadPdfButton.disabled = false;
+        }
+      }
+
+      // Reliable fallback: browser print engine preserves the exact CSS size.
+      setTimeout(function() {
+        window.print();
+      }, 250);
+    }
+
+    function printPassAsPDF() {
+      if (!generatedPassArea.classList.contains('visible')) {
+        setPdfStatus('Please generate your approved pass first.', true);
+        return;
+      }
+      setPdfStatus('In the print window, choose “Save as PDF” and paper size 90 × 160 mm (9:16).', false);
+      setTimeout(function() { window.print(); }, 150);
+    }
+
+    downloadPdfButton.addEventListener('click', downloadPassAsPDF);
+    printPdfButton.addEventListener('click', printPassAsPDF);
+
   </script>
 </body>
 </html>
