@@ -247,7 +247,7 @@
 
   <script>
     const STORAGE_KEY = 'vck_it_wing_registrations';
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpD2KVUTFXhTIhdAGHL2LFvgi3_mLlaT3WxeetSP1AOy7OJAuFkkPSyd1gbc1tLZgK/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVp_d7jH-sGv9G9PKpuVyWozCkQjfzlf8aO9mn8qpbdb1tjQnIK6MDWyAoo18R2NTP/exec';
     const loginCard = document.getElementById('loginCard');
     const adminUsername = document.getElementById('adminUsername');
     const adminPassword = document.getElementById('adminPassword');
@@ -313,6 +313,33 @@
       return String(value || '').trim().replace(/\s+/g, '').toLowerCase();
     }
 
+    function extractPassId(value) {
+      const raw = String(value || '').trim();
+      if (!raw) return '';
+
+      // Plain QR value, e.g. vckitwingpass-sept-0001
+      if (/^vckitwingpass-sept-\d+$/i.test(raw)) {
+        return raw;
+      }
+
+      // If the QR contains a URL, accept ?passId=... / ?pass_id=...
+      try {
+        const url = new URL(raw);
+        const fromQuery =
+          url.searchParams.get('passId') ||
+          url.searchParams.get('pass_id') ||
+          url.searchParams.get('passid');
+
+        if (fromQuery) return fromQuery.trim();
+      } catch (error) {
+        // Not a URL; continue below.
+      }
+
+      // Accept a simple "PassID: vckitwingpass-sept-0001" format.
+      const match = raw.match(/vckitwingpass-sept-\d+/i);
+      return match ? match[0] : raw;
+    }
+
     function findLocalPassById(passId) {
       const recordId = normalizePassId(passId);
       if (!recordId) return null;
@@ -342,8 +369,7 @@
     }
 
     async function findByPassId(passId) {
-      const localRecord = findLocalPassById(passId);
-      if (localRecord) return localRecord;
+      // Google Sheets is the source of truth for attendance.
       return await findRemotePassById(passId);
     }
 
@@ -417,7 +443,8 @@
             const imageData = scannerContext.getImageData(0, 0, scannerCanvas.width, scannerCanvas.height);
             const code = jsQR(imageData.data, imageData.width, imageData.height);
             if (code) {
-              const scannedValue = String(code.data || '').trim();
+              const rawScannedValue = String(code.data || '').trim();
+              const scannedValue = extractPassId(rawScannedValue);
               stopScanner();
               if (scannedValue) {
                 setScannerStatus('Pass detected. Loading user details...', 'info');
@@ -457,7 +484,7 @@
     });
 
     document.getElementById('manualPassIdButton').addEventListener('click', async function () {
-      const passId = manualPassIdInput.value.trim();
+      const passId = extractPassId(manualPassIdInput.value);
       const button = document.getElementById('manualPassIdButton');
       if (!passId) {
         setScannerStatus('Please enter the Pass ID to mark attendance.', 'error');
@@ -481,6 +508,7 @@
     document.getElementById('confirmAttendanceButton').addEventListener('click', async function () {
       const passId = lookupPassId.textContent.trim();
       const button = document.getElementById('confirmAttendanceButton');
+
       if (!passId || passId === '-') {
         setScannerStatus('No valid Pass ID found. Please scan or enter a Pass ID again.', 'error');
         return;
@@ -488,40 +516,41 @@
 
       setLoadingState(button, true, 'Marking...');
 
-      const records = getRegistrations();
-      const index = records.findIndex(function (record) {
-        return normalizePassId(record.passId || record.PassID || record['Pass ID']) === normalizePassId(passId);
-      });
-
-      if (index >= 0) {
-        records[index].Attendance = true;
-        records[index].attendance = true;
-        records[index].attendanceStatus = true;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-      }
-
       try {
-        const response = await fetch(SCRIPT_URL + '?action=markattendance&passId=' + encodeURIComponent(passId), {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' }
-        });
+        const response = await fetch(
+          SCRIPT_URL + '?action=markattendance&passId=' + encodeURIComponent(passId),
+          {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store'
+          }
+        );
+
         const result = await response.json().catch(function () { return null; });
+
         if (response.ok && result && result.success) {
-          setScannerStatus('Attendance marked successfully.', 'success');
+          setScannerStatus('Attendance marked successfully for ' + passId + '.', 'success');
           manualPassIdInput.value = '';
           clearLookup();
-          return;
+
+          // Automatically restart the camera for the next person.
+          setTimeout(function () {
+            if (adminAuthenticated) startAdminScanner();
+          }, 700);
+        } else {
+          const errorMessage = result && result.error
+            ? result.error
+            : 'Unable to mark attendance in Google Sheets.';
+          setScannerStatus(errorMessage, 'error');
         }
       } catch (error) {
-        console.warn('Remote attendance update failed.', error);
-      }
-
-      if (index >= 0) {
-        setScannerStatus('Attendance marked successfully in local records.', 'success');
-        manualPassIdInput.value = '';
-        clearLookup();
-      } else {
-        setScannerStatus('This pass ID was not found in local records.', 'error');
+        console.error('Remote attendance update failed:', error);
+        setScannerStatus(
+          'Unable to connect to Google Sheets. Attendance was NOT marked.',
+          'error'
+        );
+      } finally {
+        setLoadingState(button, false, 'Mark Attendance');
       }
     });
 
